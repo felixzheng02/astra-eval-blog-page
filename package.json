@@ -1,0 +1,20 @@
+{
+  "name": "astra-eval-blog-page",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf _site && eleventy",
+    "serve": "eleventy --serve",
+    "clean": "rm -rf _site"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.6",
+    "js-yaml": "^5.4.3",
+    "katex": "^0.19.0",
+    "markdown-it-anchor": "^10.0.0",
+    "markdown-it-texmath": "^1.0.0"
+  }
+}

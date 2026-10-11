@@ -1,0 +1,17 @@
+---
+layout: layout.njk
+permalink: /
+---
+{% for section in collections.sections %}
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content publication-body">
+          {{ section.templateContent | safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endfor %}

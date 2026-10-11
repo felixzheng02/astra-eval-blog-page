@@ -1,0 +1,44 @@
+# Page metadata. Edit this file — do not put titles/authors in HTML.
+# Empty strings hide optional buttons and notes.
+
+title: Evaluating Astra-as-Policies in Household Environment
+# Optional HTML (KaTeX allowed). Leave empty to use `title`.
+title_html: ""
+description: ""
+keywords: []
+
+authors:
+  - name: First Author
+    url: ""
+    equal: true
+    corresponding: false
+  - name: Second Author
+    url: ""
+    equal: true
+    corresponding: false
+  - name: Third Author
+    url: ""
+    equal: false
+    corresponding: false
+
+affiliation: Institution Name
+equal_contribution: Indicates Equal Contribution
+corresponding: Corresponding author
+
+links:
+  paper: ""
+  arxiv: ""
+  code: ""
+  supplementary: ""
+
+# Set a public URL later for Open Graph tags.
+url: ""
+
+bibtex: |
+  @article{YourPaperKey2024,
+    title={Your Paper Title Here},
+    author={First Author and Second Author and Third Author},
+    journal={Conference/Journal Name},
+    year={2024},
+    url={https://your-domain.com/your-project-page}
+  }

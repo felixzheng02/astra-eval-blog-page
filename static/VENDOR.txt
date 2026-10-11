@@ -1,0 +1,13 @@
+Vendored front-end
+
+CSS and JS under static/css/ and static/js/ (except writeup.css and this file) are copied from:
+
+- Academic Project Page Template
+  https://github.com/eliahuhorwitz/Academic-project-page-template
+- which was adopted from the Nerfies project page
+  https://nerfies.github.io
+
+Those sources are licensed under CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
+
+The site footer must keep the attribution links.
