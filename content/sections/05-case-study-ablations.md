@@ -14,4 +14,7 @@ nav: Case Study & Ablations
 | Robot |  |
 | Cameras |  |
 -->
+
+Task: open the oven, put the bread on the table into the oven, close the oven, then turn it on by rotating the knob.
+
 {% endraw %}

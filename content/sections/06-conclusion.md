@@ -2,7 +2,7 @@
 nav: Conclusion
 ---
 
-## New section
+## Conclusion
 
 {% raw %}
 <!-- Copy this file to content/sections/NN-name.md (next number, then rebuild).
