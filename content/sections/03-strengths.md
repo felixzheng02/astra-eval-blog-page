@@ -53,3 +53,7 @@ We found AaP is able to appropriately control both the mobile base and the arm s
 Open cabinet requires moving the base and the arm together to pull the door.
 
 Design a case: the target location is initially unreachable by directly extending arm; desired behavior: AaP first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around
+
+### High language steerablity and adaptation
+
+Close oven door.
