@@ -24,7 +24,7 @@ The behaviors below come from a small number of episodes (for example, 7 for mak
 
 (could further divide into subpoints later; need more tasks & demos)
 
-We found Astra is able to not only output correct high-level reasoning & planning on how to approach a task, but also ground it to the physical world and output actions with correct intention, zero-shotly on almost any tasks.
+Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement.
 
 ##### Pouring: the right motion, before the right precision
 
@@ -33,6 +33,10 @@ Given the prompt *"Pour the water in the green cup into the pink bowl"*, Astra c
 {% figure { src: "/media/images/pour-tilt.jpg", caption: "Pour water: Astra carries the cup over the bowl and tilts it to pour, without being told which joints perform a pour.", width: "55%" } %}
 
 Try a smaller deformable object. I think this should work.
+
+##### Orienting a cup for the dishwasher
+
+With a cup already in the gripper, Astra rotated the arm and wrist to orient the cup with its opening facing downward for placement in the dishwasher. It selected a useful orientation even though the first two placements missed the rack (see the [dishwasher case study](#load-a-cup-into-the-dishwasher)).
 
 ### High-level reasoning & planning
 
@@ -63,6 +67,8 @@ After each pillow is displaced, Astra's visual check of the space underneath is 
 *"Grab the apple from the kitchen and bring it to the couch."*
 
 Target localization is reliable when the apple is within the camera's field of view, and Astra looks for it in a sensible place (the kitchen counter). It degrades under occlusion, which we cover under Weaknesses.
+
+In the dishwasher task, the robot started with a cup in its gripper while facing the table. Astra turned the robot to search for the dishwasher and found it. This was another example of changing the viewpoint to acquire information needed for the next step.
 
 ##### Moving the arm out of its own way
 
@@ -117,7 +123,7 @@ In the toy clean-up task, the only instruction was *"Clean up the play area"*. A
 
 We found Astra is able to appropriately control both the mobile base and the arm simultaneously, better utilizing both capabilities to achieve tasks.
 
-Open cabinet requires moving the base and the arm together to pull the door.
+After we revised the action schema, Astra opened both cabinet doors under the sink. The task involves coordinating the base and arm as the door moves. We describe the axis and sign errors that motivated the change in the [action-interface case study](#debugging-the-action-interface).
 
 Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around
 
@@ -127,6 +133,8 @@ Base navigation was the most reliable component in both tasks. In the apple task
 
 In the toy clean-up task, action chunking changed how the robot moved. With a 4/2 chunk, Astra predicts four waypoints per turn and the robot executes the first two before the next observation. After dropping a toy in the bin, the robot **backed away, retracted the arm, and opened the gripper** in what looked like one continuous motion. At first glance these motions seemed to happen at the same time. We have not yet confirmed this from the command logs, and we think the more likely explanation is different. Without chunking, every motion is followed by a pause while the model takes its next turn. With chunking, the two executed waypoints run **back to back with no inference pause between them**. Short motions that follow one another this quickly look like a single fluid action, and the episode as a whole finishes much faster. In the same episode, Astra also appeared to **drive around the toys** on the floor instead of over them.
 
-### High language steerablity and adaptation
+### High language steerability and adaptation
+
+In one dishwasher trial, we instructed Astra to move the base rather than keep extending the arm toward the target. It changed its behavior and used the base, providing an example of how a concrete movement instruction can influence action selection.
 
 Close oven door.

@@ -53,6 +53,12 @@ Positioning the gripper next to the apple took many attempts. Astra has no consi
 
 Grasping was the weakest primitive we tested. Astra does not appear to know where on the apple to grasp, and it does not regulate grip force: the gripper left marks on the apple. It also makes little use of visual feedback to verify the grasp. Failure is detected only at the lift stage, when it checks that the apple is still held after the arm retracts, and by then the apple has already dropped.
 
+Cup pickup showed a similar pattern. Picking up the cup required **roughly four or five retries**, with difficulty observed both on the kitchen counter and on the table. Astra varied its approach across attempts. We subsequently started with the cup already in the gripper to examine the remaining steps of the [dishwasher task](#load-a-cup-into-the-dishwasher).
+
+#### Tasks requiring sustained force
+
+Opening the refrigerator was unsuccessful, whereas Astra opened both lower-resistance cabinet doors under the sink after the action-schema change. The greater pulling force required by the refrigerator may contribute to this difference, alongside grasp security, robot posture, and pulling direction.
+
 #### Deformable objects
 
 *"Find the mobile phone under the pillow on the sofa."*
@@ -71,12 +77,16 @@ Persistence seems to mask this imprecision when retries are free, as with the pi
 
 **What we saw.** Astra often lost track of **where its body was relative to nearby objects**. In the coffee task it **struck the open Keurig lid** while raising the arm after placing a pod (twice in one episode), scraped the **bottom of the sink** while reaching for a cup, hit the Keurig while placing a cup, pushed the Keurig backward, pressed the gripper hard into a drawer, and bumped the fridge during a series of moves to the right. The operator had to step in to prevent damage in **at least 2 of the first 6 coffee episodes**. In the toy clean-up task, it ran into the dresser and the toy drawer, and in one episode drove over toys. When pouring, it **could not tell whether the cup was over the bowl**, and in **none of the 3 pour episodes we recorded** did the water go cleanly into the bowl.
 
+In the RGB-only cup and door trials, Astra also misjudged the distance between the gripper, target, and surrounding surfaces, sometimes extending the arm into a cabinet or the refrigerator. The absence of depth input is a possible contributor to these errors.
+
 **Why we think it happens.**
 
 - **Some obstacles are outside every camera view.** The Keurig's lid hinges open **directly above the pod holder**. When the gripper is down in the holder, the gripper camera points at the pod and the arm blocks the head camera, so no camera can see the lid that the arm is about to rise into.
 - **The arm reaches out to the side.** The Stretch's telescoping arm extends perpendicular to the direction the base drives. When the base moves with the arm extended, the arm sweeps sideways through the room, which explains contacts like the fridge. Obstacles low and close to the base, such as the dresser and the toy drawer, are also easy to miss from cameras mounted at the top of the mast.
 - **Height is hard to judge from a single image.** To pour, Astra has to judge how high the cup is above the bowl. Once the cup is in the gripper, it fills much of the gripper camera's view and can hide the bowl. The head camera sees both objects from far above at an angle, so their vertical gap is difficult to read. Asking it to pour "without spilling" adds no new information about height, which is consistent with that wording not helping.
-- **Nothing else catches the mistake.** Our executor only enforces joint limits and does no collision checking, and the Stretch's line sensors are not part of the observation. Every contact went through unless the operator stopped it.
+- **Joint limits do not establish obstacle clearance.** Our original executor enforced joint limits without collision checking, and the Stretch's line sensors were not part of the observation.
+
+**What we changed.** To address continued pushing after overextension, we added a safety guard that reverses an action when a joint's force threshold is exceeded. The controller can respond without waiting for another model turn. The guard reacts after contact; it does not prevent the initial collision.
 
 **What might help.** Giving Astra the line sensors, checking motions against a simple collision model before they run, and including the depth image (which on its own did not remove contacts in our runs, but gives height information that pouring clearly needs).
 

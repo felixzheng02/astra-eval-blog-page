@@ -19,17 +19,25 @@ Task: open the oven, put the bread on the table into the oven, close the oven, t
 
 {% endraw %}
 
-The four case studies below follow the same pattern. Each one starts from our default configuration: the gripper and head-center camera images, joint state, and the result of the previous command are sent to Astra on every turn, Astra returns one relative joint command per turn, and reasoning effort is set to low. Between episodes we then change one or two settings:
+This section combines task comparisons with observations from developing the action interface. For the coffee, folding, toy clean-up, and pouring comparisons, our default configuration sends the gripper and head-center camera images, joint state, and the result of the previous command to Astra on every turn. Astra returns one relative joint command per turn, and reasoning effort is set to low. Between episodes we change one or two settings:
 
 - **Embodiment information** adds a description of the Stretch 4, where each camera looks, and the robot and gripper URDF to the prompt.
 - **Depth** adds a colorized depth image from the gripper camera.
 - **Action chunking (H/K)** has Astra predict *H* waypoints per turn, of which the robot executes the first *K* before the next observation. Our chunked runs use 4/2.
 
-Each episode was watched end to end, and the tables summarize what Astra did, where the operator had to step in, and how the episode ended.
+Each episode in these comparisons was watched end to end, and the tables summarize what Astra did, where the operator had to step in, and how the episode ended.
 
 {% callout "A note on what these results can and cannot show" %}
-We ran between 3 and 7 episodes per task. Scenes and settings changed between episodes, and some settings were changed together, so most configurations were run only once or twice. These case studies describe <strong>what Astra did in each episode</strong>. They are not statistically significant comparisons, and a difference between two episodes may be due to chance as much as to the setting we changed.
+We ran between 3 and 7 episodes per task for the four task comparisons. Scenes and settings changed between episodes, and some settings were changed together, so most configurations were run only once or twice. The additional action-schema and dishwasher observations are exploratory. These case studies describe <strong>what Astra did in the observed runs</strong>. They are not statistically significant comparisons, and a difference between two episodes may be due to chance as much as to the setting we changed.
 {% endcallout %}
+
+### Debugging the action interface
+
+Comparing Astra's reported explanations with its numerical commands revealed mismatches in axis selection and sign. Astra sometimes described an intention to move left but selected `base_x`, which our interface used for forward and backward movement. It also returned a negative value for a movement intended to go left where the interface required a positive one.
+
+We revised the action schema to use movement-oriented names such as **`forward` and `slide`**, replacing coordinate-style names such as `base_x` and `base_y`. With the revised schema, Astra **opened both cabinet doors under the sink**.
+
+Requesting explanations added little noticeable response latency in our runs and made these command errors easier to diagnose. Their practical value as a debugging aid makes this feature worth retaining.
 
 ### Make coffee
 
@@ -109,7 +117,19 @@ A green cup of water and a pink bowl sit on the kitchen counter, and Astra is as
 
 Pouring was the one task where our changes **did not help**. Adding "without spilling" to the instruction did not make Astra lower the cup before tilting it. Action chunking made pouring clearly worse, because the cup kept tilting while the base and arm were still moving. The underlying problem is the same **spatial judgment** gap we saw elsewhere: from the cameras it is given, Astra cannot reliably tell how high the cup is above the bowl, or whether it is over the bowl at all.
 
+### Load a cup into the dishwasher
+
+We asked Stretch to pick up a cup and load it into the dishwasher. The initial pickup was surprisingly difficult: Astra needed **roughly four or five retries**, both on the kitchen counter and on the table, and varied its grasp approach across attempts.
+
+To examine the remaining steps, we started with the cup already in the gripper. From an initial pose facing the table, Astra **turned to locate the dishwasher** and rotated the arm and wrist to orient the cup with its **opening facing downward**.
+
+The cup landed just outside the dishwasher on the first two placement attempts. On the third, Astra placed it over the rack's tines, with the tines inside the cup. This demonstrated active search and appropriate object orientation, while accurate placement remained difficult.
+
+We also instructed Astra to move the base instead of continuing to extend the arm. **It changed its behavior and used the base.** This instruction specified a concrete movement strategy, and we tested it only once; its consistency and effects on other tasks remain untested.
+
 ### What the switches changed, across tasks
+
+The table below summarizes the coffee, folding, toy clean-up, and pouring comparisons.
 
 | Switch | Make coffee | Fold clothes | Toy clean-up | Pour water |
 | --- | --- | --- | --- | --- |
@@ -117,4 +137,4 @@ Pouring was the one task where our changes **did not help**. Adding "without spi
 | Action chunking (4/2) | Not tested (safety concern) | Not tested | **Much faster and smoother**, more collisions | **Worse**: poured while moving |
 | Instruction wording ("without spilling") | — | — | — | No visible benefit |
 
-With the caveats above in mind, two patterns stand out. First, telling Astra **what body it is controlling** (embodiment information) and **how far away things are** (depth) mostly improved the **manipulation** part of a task, which is grasping and placing. It did much less for **collision avoidance**. Second, **action chunking trades safety for speed**. That trade is worth making in open, forgiving spaces like a play area, and it is a poor one for precise, contact-heavy tasks like pouring. The next step is to test these effects with more episodes per configuration and with **one switch changed at a time**.
+With the caveats above in mind, two patterns stand out in these four comparisons. First, telling Astra **what body it is controlling** (embodiment information) and **how far away things are** (depth) went along with better **manipulation** in some episodes. Contacts still occurred. Second, **action chunking made motion faster and smoother, but also brought more contact in our runs**. The additional schema and dishwasher observations suggest that how we describe actions can matter too. The next step is to test these effects with more episodes per configuration and with **one switch changed at a time**.
