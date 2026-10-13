@@ -79,23 +79,9 @@ By default, each response contains exactly one command. When action chunking is 
 
 ### Control loop
 
-Astra runs in a synchronous observe–predict–execute loop:
+Astra runs in a synchronous observe–predict–execute loop. Each turn, the host waits for the joint state and a fresh frame from every selected camera, sends them to Astra, converts its reply into joint deltas, and executes them on the robot. Once the robot reports a result, the loop repeats with new observations. The episode ends when Astra replies `done` or the operator presses Stop.
 
-1. **Observe.** Wait until the joint state and a frame from every selected camera have arrived.
-2. **Predict.** Send the turn message and images to Astra and wait for its JSON reply.
-3. **Execute.** Convert each joint command into a signed joint delta using the live robot state, send it to the robot, and wait for the result.
-4. **Refresh.** Wait for camera frames newer than that result, then return to step 1.
-
-The episode ends when Astra replies `done` or when the human operator presses Stop.
-
-Astra makes every motion decision: where to drive, how to approach an object, how to orient the wrist, when to close the gripper, and when the task is finished. The supporting software does no planning, object detection, grasp selection, or navigation. Its only jobs are to:
-
-- encode the images and format the joint state as text,
-- convert named directions into signed joint deltas, applying base moves relative to the pose at observation time,
-- execute each command on the robot and classify the result: `completed` when every commanded joint comes to rest within 0.5 cm, 2°, or 3% grip of its target; `stopped_short` when a joint comes to rest before reaching it; `timeout`, which also stops the robot, when a joint is still moving after 10 s; and `rejected` when the command exceeds its limits,
-- send zero-motion commands at the start and end of every episode and whenever Stop is pressed.
-
-A human operator watches every run and can stop it from a dashboard. Stop halts the robot immediately and interrupts any model call in progress. The robot has no obstacle avoidance. Its only built-in safety feature is force feedback, which stops a joint when it meets unexpected resistance, and the operator presses the run-stop whenever the robot is about to damage itself or its surroundings. Because nothing else prevents collisions, we count them as a metric. Every turn is logged: the instructions, the images sent, the raw reply, the model's reasoning summary, and latency. We use these logs for both metrics and qualitative analysis.
+Astra makes every motion decision, including when the task is finished. The supporting software does no planning, perception, grasp selection, or navigation. It only formats observations, translates commands, and reports whether each command completed, stopped short, timed out, or was rejected. The robot has no obstacle avoidance. Its only built-in safety feature is force feedback, so an operator watches every run and presses the run-stop if the robot is about to damage itself or its surroundings. Every turn is logged (images, raw reply, reasoning summary, and latency) for metrics and qualitative analysis.
 
 ### Model configuration and zero-shot setting
 
@@ -112,9 +98,7 @@ The one-sentence task instruction is appended at the end.
 
 Each episode runs in a single Codex thread. Every turn, including its images, stays in that thread, so Astra can refer back to what it has seen and done earlier in the episode. A fresh thread starts for every episode, so nothing carries over between trials.
 
-{% callout "What we mean by zero-shot" %}
-There is no robot-specific training or fine-tuning, no demonstrations or in-context examples, and no hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt is the same for every task, and only the task sentence changes, except where we explicitly ablate prompt wording.
-{% endcallout %}
+We consider this setting zero-shot. There is no robot-specific training or fine-tuning, no demonstrations or in-context examples, and no hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt is the same for every task, and only the task sentence changes, except where we explicitly ablate prompt wording.
 
 ### Tasks and evaluation protocol
 
