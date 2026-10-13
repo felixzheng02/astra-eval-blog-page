@@ -17,7 +17,7 @@ nav: Experiment Setup
 
 ### Robot and environment
 
-All experiments use a Hello Robot **Stretch 4**, a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base that can drive in any direction and turn in place, a lift that moves the arm up and down a vertical mast, a telescoping arm, a three-axis wrist (yaw, pitch, roll), and a parallel-jaw gripper. Its sensors are an RGB-D camera on the wrist that moves with the arm, three cameras on the mast (a center camera plus fish-eye cameras on the left and right), two lidars, and line sensors near the base. Astra sees only some of these sensors, as described below. It never receives lidar or line-sensor data.
+All experiments use a Hello Robot Stretch 4, a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base that can drive in any direction and turn in place, a lift that moves the arm up and down a vertical mast, a telescoping arm, a three-axis wrist (yaw, pitch, roll), and a parallel-jaw gripper. Its sensors are an RGB-D camera on the wrist that moves with the arm, three cameras on the mast (a center camera plus fish-eye cameras on the left and right), two lidars, and line sensors near the base. Astra sees only some of these sensors, as described below. It never receives lidar or line-sensor data.
 
 Model inference runs off-board. A workstation runs the Codex process along with the ROS 2 nodes that build each prompt, and it communicates with the robot over Zenoh. A motion executor on the robot carries out each command and reports the result.
 
@@ -37,7 +37,7 @@ At each decision step, Astra receives one text message and a set of images:
 - **Joint state (proprioception).** Lift height and arm extension in centimeters, wrist swing, tilt, and twist in degrees, and gripper opening in percent (0 is closed, 100 is fully open). Base odometry is not included, so the model has to judge where the base is from the cameras.
 - **Execution feedback.** After the first turn, the result of the previous command: `completed`, `stopped_short`, `timeout`, or `rejected`, followed by one line per commanded joint. The prompt explains that `stopped_short` on the gripper usually means the fingers closed on an object, while on any other joint it usually means a collision stopped the motion.
 
-Two more inputs are switched on only in ablations. The first is **wrist depth**, rendered as a color-mapped image aligned pixel for pixel with the wrist image: red means 10 cm or closer, shifting through yellow and green to blue at 1.5 m or farther, and black means no reading. The second is an **embodiment description** taken from the Stretch 4 data sheet (size, degrees of freedom, joint travel, reach, payload, and sensors), along with the URDFs of the robot and the gripper.
+Two more inputs are switched on only in ablations. The first is wrist depth, rendered as a color-mapped image aligned pixel for pixel with the wrist image: red means 10 cm or closer, shifting through yellow and green to blue at 1.5 m or farther, and black means no reading. The second is an embodiment description taken from the Stretch 4 data sheet (size, degrees of freedom, joint travel, reach, payload, and sensors), along with the URDFs of the robot and the gripper.
 
 Astra replies with a single JSON object containing its reasoning, a `kind` (`move` or `done`), and a joint command. Each joint is named and given an explicit direction and a positive amount:
 
@@ -85,7 +85,7 @@ Astra makes every motion decision, including when the task is finished. The supp
 
 ### Model configuration and zero-shot setting
 
-We access Astra (`gpt-6-astra`) through the Codex CLI, which runs as a long-lived `codex app-server` process with a read-only sandbox and approvals disabled. Reasoning effort is **low** by default, and our ablations also test medium and high.
+We access Astra (`gpt-6-astra`) through the Codex CLI, which runs as a long-lived `codex app-server` process with a read-only sandbox and approvals disabled. Reasoning effort is low by default, and our ablations also test medium and high.
 
 Every task uses the same developer instructions. They state the goal (control a Stretch 4 to complete the user's task), describe the control loop and the inputs, and specify the JSON output format and joint directions. They also include a single safety line ("avoid collisions") and four general hints:
 
