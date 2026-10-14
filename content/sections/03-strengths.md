@@ -20,6 +20,14 @@ nav: Where We Were Impressed
 The behaviors below come from a small number of episodes (for example, 7 for making coffee and 4 for the toy clean-up), often run under different settings. They are <strong>individual observations, not statistically significant results</strong>. They show what Astra <em>can</em> do, not how often it does it, and we do not take them as proof of higher-order reasoning. Where we quote Astra's reasoning, we are quoting the summary the model reports about itself, which may not reflect how it actually arrived at an action.
 {% endcallout %} -->
 
+{% comment "10/14 meeting" %}
+4/5 trials info here
+
+rename title to strengths
+
+some level of failure recovery (something we don't see in traditional robotics)
+{% endcomment %}
+
 <!-- ### Correct motion intention -->
 ### Zero-shot generalization over diverse tasks
 

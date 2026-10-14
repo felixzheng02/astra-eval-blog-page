@@ -15,6 +15,10 @@ nav: Experiment Setup
 -->
 {% endraw %}
 
+{% comment "10/14 meeting" %}
+move metrics to appendix
+{% endcomment %}
+
 ### Robot and environment
 
 We use a [Hello Robot Stretch 4](https://hello-robot.com/stretch-4/), a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base that can drive in any direction and turn in place, a lift that moves the arm up and down a vertical mast, a telescoping arm, a three-axis wrist (yaw, pitch, roll), and a parallel-jaw gripper. It has an RGB-D camera on the wrist, three cameras on the mast (a center camera plus two fish-eye cameras), and other lidar sensors that we didn't use in our experiments.

@@ -23,6 +23,12 @@ nav: Weaknesses
 
 <!-- The failures we saw were not random. Most of them happened in the **same few situations**: the robot's own arm blocking its view, contact and force deciding the outcome, or Astra having nothing in its interface to report that something had gone wrong. Many of these situations are hard for **any** system that works from camera images alone, not just for Astra. Where we can, we describe what we saw, what we think is causing it, and what might help. The same caveat as before applies: these are counts from a handful of episodes, not measured failure rates. -->
 
+{% comment "10/14 meeting" %}
+collision/scene awareness
+
+define 'fine-grained manipulation'
+{% endcomment %}
+
 ### Fine-grained manipulation
 
 We found taht Astra struggles with fine-grained manipulation in general, for several likely reasons: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
