@@ -53,6 +53,101 @@ function assignHeadingNumbers(state) {
   }
 }
 
+function decodeEntities(value) {
+  return String(value || "")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&apos;", "'");
+}
+
+function stripTags(html) {
+  return decodeEntities(
+    String(html || "")
+      .replace(/<span class="heading-number">[\s\S]*?<\/span>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
+}
+
+function headingOutline(html) {
+  const headings = [];
+  const re = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
+  let match;
+  while ((match = re.exec(String(html || "")))) {
+    const attrs = match[2];
+    headings.push({
+      level: Number(match[1]),
+      id: /(?:^|\s)id="([^"]+)"/.exec(attrs)?.[1] || "",
+      number: /data-heading-number="([^"]+)"/.exec(attrs)?.[1] || "",
+      title: stripTags(match[3]),
+    });
+  }
+  return headings;
+}
+
+function nestHeadings(headings) {
+  const root = [];
+  const stack = [];
+  for (const heading of headings) {
+    const node = { ...heading, children: [] };
+    while (stack.length && stack[stack.length - 1].level >= node.level) {
+      stack.pop();
+    }
+    if (stack.length === 0) {
+      root.push(node);
+    } else {
+      stack[stack.length - 1].children.push(node);
+    }
+    stack.push(node);
+  }
+  return root;
+}
+
+function renderToc(items) {
+  if (!items.length) return "";
+  let html = `<ol class="toc-list">`;
+  for (const item of items) {
+    const number = item.number
+      ? `<span class="heading-number">${esc(item.number)}</span> `
+      : "";
+    html += `<li><a href="#${esc(item.id)}">${number}${esc(item.title)}</a>`;
+    if (item.children.length) html += renderToc(item.children);
+    html += `</li>`;
+  }
+  html += `</ol>`;
+  return html;
+}
+
+function sectionsTableOfContents(sections = []) {
+  const headings = [];
+  for (const section of sections) {
+    const extracted = headingOutline(section.templateContent);
+    if (extracted.length) {
+      headings.push(...extracted);
+      continue;
+    }
+    const title = section.data?.nav || "";
+    if (!title) continue;
+    const number = sectionNumberFromPath(section.inputPath);
+    headings.push({
+      level: 2,
+      id: slugify(title),
+      number: number ? String(number) : "",
+      title,
+    });
+  }
+  return renderToc(nestHeadings(headings));
+}
+
+function fallbackSectionId(section) {
+  if (headingOutline(section?.templateContent).length) return "";
+  return slugify(section?.data?.nav);
+}
+
 function esc(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -107,6 +202,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("authorNames", (authors = []) =>
     authors.map((author) => author.name).filter(Boolean).join(", ")
   );
+  eleventyConfig.addFilter("headingOutline", headingOutline);
+  eleventyConfig.addFilter("tableOfContents", sectionsTableOfContents);
+  eleventyConfig.addFilter("fallbackSectionId", fallbackSectionId);
 
   eleventyConfig.addCollection("sections", (api) =>
     api

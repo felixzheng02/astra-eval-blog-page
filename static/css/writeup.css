@@ -33,6 +33,79 @@ html {
   font-variant-numeric: tabular-nums;
 }
 
+.toc-section {
+  padding-top: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+
+.toc {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.toc .title.is-3 {
+  margin-bottom: 1.5rem !important;
+}
+
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc > .toc-list > li {
+  margin-bottom: 0.65rem;
+}
+
+.toc .toc-list .toc-list {
+  margin-top: 0.15rem;
+}
+
+.toc li {
+  margin: 0.1rem 0;
+}
+
+.toc li li {
+  padding-left: 0;
+}
+
+.toc a {
+  display: grid;
+  grid-template-columns: 4.75rem 1fr;
+  column-gap: 0.7rem;
+  align-items: baseline;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.toc a:hover {
+  color: var(--primary-color);
+}
+
+.toc li li a {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.toc li li a:hover {
+  color: var(--primary-color);
+}
+
+.toc a .heading-number {
+  margin-right: 0;
+  color: inherit;
+  font-weight: 600;
+  text-align: right;
+}
+
+.toc li li .heading-number,
+.toc li li li .heading-number {
+  font-weight: 500;
+}
+
 .publication-body h3.title.is-4,
 .publication-body h4.title.is-5 {
   text-align: left;
