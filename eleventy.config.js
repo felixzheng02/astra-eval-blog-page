@@ -125,7 +125,9 @@ function renderToc(items) {
 function sectionsTableOfContents(sections = []) {
   const headings = [];
   for (const section of sections) {
-    const extracted = headingOutline(section.templateContent);
+    const extracted = headingOutline(section.templateContent).filter(
+      (heading) => heading.level <= 3
+    );
     if (extracted.length) {
       headings.push(...extracted);
       continue;
