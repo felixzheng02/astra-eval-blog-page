@@ -117,7 +117,7 @@ export default function (eleventyConfig) {
     ];
     if (opts.poster) attrs.push(`poster="${esc(localUrl(opts.poster))}"`);
     return mediaFigure({
-      inner: `<video ${attrs.join(" ")}></video>`,
+      inner: `<div class="embed-frame"><video ${attrs.join(" ")}></video></div>`,
       caption: opts.caption || "",
     });
   });
