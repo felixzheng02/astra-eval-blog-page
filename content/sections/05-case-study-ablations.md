@@ -19,7 +19,7 @@ Task: open the oven, put the bread on the table into the oven, close the oven, t
 
 {% endraw %}
 
-This section combines task comparisons with observations from developing the action interface. For the coffee, folding, toy clean-up, and pouring comparisons, our default configuration sends the gripper and head-center camera images, joint state, and the result of the previous command to Astra on every turn. Astra returns one relative joint command per turn, and reasoning effort is set to low. Between episodes we change one or two settings:
+<!-- This section combines task comparisons with observations from developing the action interface. For the coffee, folding, toy clean-up, and pouring comparisons, our default configuration sends the gripper and head-center camera images, joint state, and the result of the previous command to Astra on every turn. Astra returns one relative joint command per turn, and reasoning effort is set to low. Between episodes we change one or two settings:
 
 - **Embodiment information** adds a description of the Stretch 4, where each camera looks, and the robot and gripper URDF to the prompt.
 - **Depth** adds a colorized depth image from the gripper camera.
@@ -113,7 +113,7 @@ A green cup of water and a pink bowl sit on the kitchen counter, and Astra is as
 | 3 | "… without spilling" | None | Poured from too high again and **could not tell whether the cup was over the bowl** | **Failure**, worse than episode 1 |
 | 4 | "… without spilling" | + embodiment, + depth | *(result to be added)* | *(to be added)* |
 
-<!-- TODO(Ankit): fill in the pour episode 4 result. The notes also list episode ids c4198442… ("pickup part to place") and b903fd32… without a description. -->
+<!-- TODO(Ankit): fill in the pour episode 4 result. The notes also list episode ids c4198442… ("pickup part to place") and b903fd32… without a description. --
 
 Pouring was the one task where our changes **did not help**. Adding "without spilling" to the instruction did not make Astra lower the cup before tilting it. Action chunking made pouring clearly worse, because the cup kept tilting while the base and arm were still moving. The underlying problem is the same **spatial judgment** gap we saw elsewhere: from the cameras it is given, Astra cannot reliably tell how high the cup is above the bowl, or whether it is over the bowl at all.
 
@@ -137,4 +137,4 @@ The table below summarizes the coffee, folding, toy clean-up, and pouring compar
 | Action chunking (4/2) | Not tested (safety concern) | Not tested | **Much faster and smoother**, more collisions | **Worse**: poured while moving |
 | Instruction wording ("without spilling") | — | — | — | No visible benefit |
 
-With the caveats above in mind, two patterns stand out in these four comparisons. First, telling Astra **what body it is controlling** (embodiment information) and **how far away things are** (depth) went along with better **manipulation** in some episodes. Contacts still occurred. Second, **action chunking made motion faster and smoother, but also brought more contact in our runs**. The additional schema and dishwasher observations suggest that how we describe actions can matter too. The next step is to test these effects with more episodes per configuration and with **one switch changed at a time**.
+With the caveats above in mind, two patterns stand out in these four comparisons. First, telling Astra **what body it is controlling** (embodiment information) and **how far away things are** (depth) went along with better **manipulation** in some episodes. Contacts still occurred. Second, **action chunking made motion faster and smoother, but also brought more contact in our runs**. The additional schema and dishwasher observations suggest that how we describe actions can matter too. The next step is to test these effects with more episodes per configuration and with **one switch changed at a time**. -->

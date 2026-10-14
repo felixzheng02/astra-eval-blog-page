@@ -16,17 +16,35 @@ nav: Where We Were Impressed
 -->
 {% endraw %}
 
-{% callout "How to read this section" %}
+<!-- {% callout "How to read this section" %}
 The behaviors below come from a small number of episodes (for example, 7 for making coffee and 4 for the toy clean-up), often run under different settings. They are <strong>individual observations, not statistically significant results</strong>. They show what Astra <em>can</em> do, not how often it does it, and we do not take them as proof of higher-order reasoning. Where we quote Astra's reasoning, we are quoting the summary the model reports about itself, which may not reflect how it actually arrived at an action.
-{% endcallout %}
+{% endcallout %} -->
 
-### Correct motion intention
+<!-- ### Correct motion intention -->
+### Zero-shot generalization over diverse tasks
 
-(could further divide into subpoints later; need more tasks & demos)
+Deployed zero-shot in a household environment, Astra can complete a diverse range of tasks, suggesting that a powerful VLM can transfer its knowledge to the physical world and generalize across robotic tasks.
 
-Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement.
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "First clip: what this trial shows." %}
+{% video "/media/videos/clip-b.mp4", "Second clip: short description." %}
+{% video "/media/videos/clip-c.mp4", "Third clip." %}
+{% video "/media/videos/clip-d.mp4", "Fourth clip." %}
+{% video "/media/videos/clip-e.mp4", "Fifth clip." %}
+{% video "/media/videos/clip-f.mp4", "Sixth clip." %}
+{% endvideoGrid %}
 
-##### Pouring: the right motion, before the right precision
+For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
+
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "First clip: what this trial shows." %}
+{% video "/media/videos/clip-b.mp4", "Second clip: short description." %}
+{% video "/media/videos/clip-c.mp4", "Third clip." %}
+{% endvideoGrid %}
+
+<!-- Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement. -->
+
+<!-- ##### Pouring: the right motion, before the right precision
 
 Given the prompt *"Pour the water in the green cup into the pink bowl"*, Astra carried the cup over the bowl and **tilted it to pour**. Nothing in the prompt said which joint to rotate or in which direction, and Astra has no pouring primitive to call. It produced the pour as a sequence of relative joint displacements. When its first tilt from the right side produced no water, it moved to the left side of the bowl and poured from left to right. The cup is opaque, so Astra had no way to see how much water was inside or how far the cup needed to tip before water would flow. Its first attempt was therefore a reasonable guess that turned out to be too shallow. The execution was far from clean: across our pour episodes the water was released from too high and much of it landed on the counter (see [Weaknesses](#weaknesses)). Even so, the **choice of motion** was right. Astra treated pouring as rotating a held container above the target, and when the first tilt failed it adjusted the motion instead of giving up.
 
@@ -36,29 +54,21 @@ Try a smaller deformable object. I think this should work.
 
 ##### Orienting a cup for the dishwasher
 
-With a cup already in the gripper, Astra rotated the arm and wrist to orient the cup with its opening facing downward for placement in the dishwasher. It selected a useful orientation even though the first two placements missed the rack (see the [dishwasher case study](#load-a-cup-into-the-dishwasher)).
+With a cup already in the gripper, Astra rotated the arm and wrist to orient the cup with its opening facing downward for placement in the dishwasher. It selected a useful orientation even though the first two placements missed the rack (see the [dishwasher case study](#load-a-cup-into-the-dishwasher)). -->
 
-### High-level reasoning & planning
+### High-level reasoning and planning
 
-#### It understands (ambiguous) task instruction
-
-Transport something from kitchen to bedroom
-
-Find me something to wipe the table
-
-*"Grab the apple from the kitchen and bring it to the couch."*
-
-Astra grounds all three components of the instruction correctly: the target object (the apple), its source location (the kitchen), and the goal (the couch). This held in every attempt, so the failures we describe later are not failures of instruction understanding.
-
-*"Find the mobile phone under the pillow on the sofa."*
-
-"Find" turned out to be underspecified. We meant retrieve the phone, but Astra interpreted it as localize it: in every run it ended by announcing the phone as found as soon as the phone was visible. Since the instruction never asks for retrieval, we don't count this against Astra. It does show that Astra resolves ambiguity toward the most literal reading, so the instruction has to state the goal explicitly.
+Even though VLMs are known for strong semantic understanding and are widely used for high-level task planning in robotics, we were impressed by how Astra grounds these capabilities in physical actions, enabling active perception, strong understanding of user intent, and robust planning and replanning.
 
 #### It actively gathers information it needs
 
-Actively looking for user and handover
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Find the mobile phone under the pillow on the sofa." %}
+{% video "/media/videos/clip-b.mp4", "Grab the apple from the kitchen and bring it to the couch." %}
+{% video "/media/videos/clip-c.mp4", "Move the arm when it obstructs the camera's view." %}
+{% endvideoGrid %}
 
-*"Find the mobile phone under the pillow on the sofa."*
+<!-- *"Find the mobile phone under the pillow on the sofa."*
 
 The phone is occluded at the start, so the task requires active search rather than a single look-and-grasp. Astra navigates to the sofa, stops within arm's reach facing it, and inspects the pillows sequentially. We can't see its internal state, but it behaves as if it keeps a list of candidate occluders: once one pillow turns out to have nothing under it, it moves directly to the next without revisiting.
 
@@ -72,19 +82,41 @@ In the dishwasher task, the robot started with a cup in its gripper while facing
 
 ##### Moving the arm out of its own way
 
-While making coffee, Astra repeatedly **moved its own arm to see better**. On the Stretch, the arm and wrist often sit between the head camera and the object being handled. In one episode the arm blocked the view of the cup. Astra's reasoning read *"Retracting to reveal handle"*, and it pulled the arm back to get a clear view before planning the grasp. Nothing in the prompt told Astra that its arm could block its cameras.
+While making coffee, Astra repeatedly **moved its own arm to see better**. On the Stretch, the arm and wrist often sit between the head camera and the object being handled. In one episode the arm blocked the view of the cup. Astra's reasoning read *"Retracting to reveal handle"*, and it pulled the arm back to get a clear view before planning the grasp. Nothing in the prompt told Astra that its arm could block its cameras. -->
 
-#### It plans over long-horizon, and replans when necessary
+#### It understands ambiguous task instructions
 
-*"Grab the apple from the kitchen and bring it to the couch."*
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Find me something to wipe the table." %}
+{% video "/media/videos/clip-a.mp4", "example 2." %}
+{% video "/media/videos/clip-a.mp4", "example 3." %}
+{% endvideoGrid %}
+
+<!-- *"Grab the apple from the kitchen and bring it to the couch."*
+
+Astra grounds all three components of the instruction correctly: the target object (the apple), its source location (the kitchen), and the goal (the couch). This held in every attempt, so the failures we describe later are not failures of instruction understanding.
+
+*"Find the mobile phone under the pillow on the sofa."*
+
+"Find" turned out to be underspecified. We meant retrieve the phone, but Astra interpreted it as localize it: in every run it ended by announcing the phone as found as soon as the phone was visible. Since the instruction never asks for retrieval, we don't count this against Astra. It does show that Astra resolves ambiguity toward the most literal reading, so the instruction has to state the goal explicitly. -->
+
+#### It plans over long horizons and replans when necessary
+
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Make coffee." %}
+{% video "/media/videos/clip-a.mp4", "Clean up the play area." %}
+{% video "/media/videos/clip-a.mp4", "One more example." %}
+{% endvideoGrid %}
+
+<!-- *"Grab the apple from the kitchen and bring it to the couch."*
 
 Astra shows persistent retry behavior. Over many failed attempts at the apple grasp, it adjusted its approach between attempts and kept going rather than stalling or aborting. It also verifies the grasp once the arm retracts, so a dropped apple triggers re-planning. How long that re-planning takes is covered under Latency.
 
 *"Find the mobile phone under the pillow on the sofa."*
 
-The same pattern appears with the pillow. It slipped out of the gripper repeatedly, and Astra kept retrying until it secured it.
+The same pattern appears with the pillow. It slipped out of the gripper repeatedly, and Astra kept retrying until it secured it. -->
 
-##### Making coffee from a two-word prompt
+<!-- ##### Making coffee from a two-word prompt
 
 Making coffee with a Keurig is a long sequence of dependent steps. The robot has to take a pod from a drawer, open the lid, seat the pod, close the lid, place a cup under the spout, and press the brew button. The prompt, which was purposely left vague, "make coffee" produced consistent **decomposition of the task into the correct sub goals** across all our runs. However, Astra did not commit to a single fixed order. Some runs involved handling the pod first and the cup last - vice versa. Its semantic choices within the plan were often sensible too. In one run it **skipped a pod that had already been punctured** and picked an unused one. In another it **ignored objects that looked like pods but sat outside the pod drawer**. When it held a pod facing the wrong way, it **rotated the pod** before placing it.
 
@@ -117,24 +149,33 @@ The comparison with other episodes is what makes this stand out. In episode 3, a
 
 ##### Cleaning up toys without being told how
 
-In the toy clean-up task, the only instruction was *"Clean up the play area"*. Astra worked out on its own what cleaning up meant: picking each toy off the floor and putting it away in a bin. In **2 of our 4 episodes** it **picked up every toy** in the area without help, and in one of those it returned `done` right when the floor was clear. In one episode it also **sorted the toys by type**, putting the blocks with the other blocks and the remaining toys in a separate bin, even though nobody asked it to sort.
+In the toy clean-up task, the only instruction was *"Clean up the play area"*. Astra worked out on its own what cleaning up meant: picking each toy off the floor and putting it away in a bin. In **2 of our 4 episodes** it **picked up every toy** in the area without help, and in one of those it returned `done` right when the floor was clear. In one episode it also **sorted the toys by type**, putting the blocks with the other blocks and the remaining toys in a separate bin, even though nobody asked it to sort. -->
 
-### Coordination of mobility and manipulation
+### Coordination of mobile base and arm
 
-We found Astra is able to appropriately control both the mobile base and the arm simultaneously, better utilizing both capabilities to achieve tasks.
+We found that Astra can adjust its whole-body pose by controlling the mobile base and arm together, enabling it to perform tasks that require coordinated movement.
 
-After we revised the action schema, Astra opened both cabinet doors under the sink. The task involves coordinating the base and arm as the door moves. We describe the axis and sign errors that motivated the change in the [action-interface case study](#debugging-the-action-interface).
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Open cabinet." %}
+{% video "/media/videos/clip-a.mp4", "Open the fridge." %}
+{% video "/media/videos/clip-a.mp4", "Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around." %}
+{% endvideoGrid %}
 
-Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around
+<!-- After we revised the action schema, Astra opened both cabinet doors under the sink. The task involves coordinating the base and arm as the door moves. We describe the axis and sign errors that motivated the change in the [action-interface case study](#debugging-the-action-interface).
 
 Base navigation was the most reliable component in both tasks. In the apple task, Astra reaches the couch with the apple still held, so it localizes the couch correctly. In the phone task, it positions the base within arm's reach of the sofa without contact, and aligns the gripper with the pillow's height and a corner or edge.
 
 ##### Fluid motion with action chunking
 
-In the toy clean-up task, action chunking changed how the robot moved. With a 4/2 chunk, Astra predicts four waypoints per turn and the robot executes the first two before the next observation. After dropping a toy in the bin, the robot **backed away, retracted the arm, and opened the gripper** in what looked like one continuous motion. At first glance these motions seemed to happen at the same time. We have not yet confirmed this from the command logs, and we think the more likely explanation is different. Without chunking, every motion is followed by a pause while the model takes its next turn. With chunking, the two executed waypoints run **back to back with no inference pause between them**. Short motions that follow one another this quickly look like a single fluid action, and the episode as a whole finishes much faster. In the same episode, Astra also appeared to **drive around the toys** on the floor instead of over them.
+In the toy clean-up task, action chunking changed how the robot moved. With a 4/2 chunk, Astra predicts four waypoints per turn and the robot executes the first two before the next observation. After dropping a toy in the bin, the robot **backed away, retracted the arm, and opened the gripper** in what looked like one continuous motion. At first glance these motions seemed to happen at the same time. We have not yet confirmed this from the command logs, and we think the more likely explanation is different. Without chunking, every motion is followed by a pause while the model takes its next turn. With chunking, the two executed waypoints run **back to back with no inference pause between them**. Short motions that follow one another this quickly look like a single fluid action, and the episode as a whole finishes much faster. In the same episode, Astra also appeared to **drive around the toys** on the floor instead of over them. -->
 
-### High language steerability and adaptation
+### Strong language steerability and adaptation
 
-In one dishwasher trial, we instructed Astra to move the base rather than keep extending the arm toward the target. It changed its behavior and used the base, providing an example of how a concrete movement instruction can influence action selection.
+We found that Astra can generate motion commands that closely follow detailed natural-language instructions specifying exactly how the robot should move, such as precise arm positioning, gripper orientation, or base adjustments.
 
-Close oven door.
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "Open the oven without additional instruction." %}
+{% video "/media/videos/clip-a.mp4", "Open the oven by placing the gripper under the door, tilting it upward, then moving slowly up and forward to push the door closed." %}
+{% endvideoGrid %}
+
+<!-- In one dishwasher trial, we instructed Astra to move the base rather than keep extending the arm toward the target. It changed its behavior and used the base, providing an example of how a concrete movement instruction can influence action selection. -->

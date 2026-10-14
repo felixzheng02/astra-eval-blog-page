@@ -21,11 +21,19 @@ nav: Weaknesses
 -->
 {% endraw %}
 
-The failures we saw were not random. Most of them happened in the **same few situations**: the robot's own arm blocking its view, contact and force deciding the outcome, or Astra having nothing in its interface to report that something had gone wrong. Many of these situations are hard for **any** system that works from camera images alone, not just for Astra. Where we can, we describe what we saw, what we think is causing it, and what might help. The same caveat as before applies: these are counts from a handful of episodes, not measured failure rates.
+<!-- The failures we saw were not random. Most of them happened in the **same few situations**: the robot's own arm blocking its view, contact and force deciding the outcome, or Astra having nothing in its interface to report that something had gone wrong. Many of these situations are hard for **any** system that works from camera images alone, not just for Astra. Where we can, we describe what we saw, what we think is causing it, and what might help. The same caveat as before applies: these are counts from a handful of episodes, not measured failure rates. -->
 
 ### Fine-grained manipulation
 
-**What we saw.** Astra's plans were usually right, but steps that come down to millimeters and force often failed. In the coffee task, Astra **did not fully seat the pod in any of the first 6 episodes**. In one of those, the operator had to push the pod down by hand. Closing the Keurig lid **failed twice in a single episode**, and pressing the brew button took several small corrections before the gripper was aligned with it. Astra also **deformed a pod by squeezing too hard**, after which the pod could not be pushed into place. Other tasks showed the same pattern. The toy drill took **4–5 attempts** to pick up. While folding a hoodie, Astra closed the gripper when it was nowhere near the fabric and missed the hem several times.
+Astra struggles with fine-grained manipulation in general, for the following possible reasonings: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
+
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Open cabinet." %}
+{% video "/media/videos/clip-a.mp4", "Open the fridge." %}
+{% video "/media/videos/clip-a.mp4", "Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around." %}
+{% endvideoGrid %}
+
+<!-- **What we saw.** Astra's plans were usually right, but steps that come down to millimeters and force often failed. In the coffee task, Astra **did not fully seat the pod in any of the first 6 episodes**. In one of those, the operator had to push the pod down by hand. Closing the Keurig lid **failed twice in a single episode**, and pressing the brew button took several small corrections before the gripper was aligned with it. Astra also **deformed a pod by squeezing too hard**, after which the pod could not be pushed into place. Other tasks showed the same pattern. The toy drill took **4–5 attempts** to pick up. While folding a hoodie, Astra closed the gripper when it was nowhere near the fabric and missed the hem several times.
 
 **Why this is hard.** Placing a coffee pod is a demanding task for a robot that sees the world only through its cameras:
 
@@ -71,11 +79,20 @@ The pillow was a different problem from the apple. Its shape changes under the g
 
 Placement is where the apple task failed. In two of three attempts the apple did not end up resting on the couch, and the run did not complete. Up to that point, grounding, localization, grasping and navigation had all worked, and Astra had already selected a placement location. We do not think this was a failure of task understanding, and we do not yet have a clear explanation for it.
 
-Persistence seems to mask this imprecision when retries are free, as with the pillow, but not when a failed grasp has a physical cost, as with the dropped apple.
+Persistence seems to mask this imprecision when retries are free, as with the pillow, but not when a failed grasp has a physical cost, as with the dropped apple. -->
 
-### Spatial reasoning
+### Repeated failure modes
 
-**What we saw.** Astra often lost track of **where its body was relative to nearby objects**. In the coffee task it **struck the open Keurig lid** while raising the arm after placing a pod (twice in one episode), scraped the **bottom of the sink** while reaching for a cup, hit the Keurig while placing a cup, pushed the Keurig backward, pressed the gripper hard into a drawer, and bumped the fridge during a series of moves to the right. The operator had to step in to prevent damage in **at least 2 of the first 6 coffee episodes**. In the toy clean-up task, it ran into the dresser and the toy drawer, and in one episode drove over toys. When pouring, it **could not tell whether the cup was over the bowl**, and in **none of the 3 pour episodes we recorded** did the water go cleanly into the bowl.
+We noticed that Astra is inclined to attempt solving the task in the most obvious way, and often fails to reason about failures and try a different approach accordingly.
+
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "Open the oven's door." %}
+{% video "/media/videos/clip-a.mp4", "Stack the bottled water onto the cup." %}
+{% endvideoGrid %}
+
+<!-- ### Spatial reasoning -->
+
+<!-- **What we saw.** Astra often lost track of **where its body was relative to nearby objects**. In the coffee task it **struck the open Keurig lid** while raising the arm after placing a pod (twice in one episode), scraped the **bottom of the sink** while reaching for a cup, hit the Keurig while placing a cup, pushed the Keurig backward, pressed the gripper hard into a drawer, and bumped the fridge during a series of moves to the right. The operator had to step in to prevent damage in **at least 2 of the first 6 coffee episodes**. In the toy clean-up task, it ran into the dresser and the toy drawer, and in one episode drove over toys. When pouring, it **could not tell whether the cup was over the bowl**, and in **none of the 3 pour episodes we recorded** did the water go cleanly into the bowl.
 
 In the RGB-only cup and door trials, Astra also misjudged the distance between the gripper, target, and surrounding surfaces, sometimes extending the arm into a cabinet or the refrigerator. The absence of depth input is a possible contributor to these errors.
 
@@ -101,23 +118,25 @@ For the apple, Astra chose a placement location on the couch, but the location w
 
 #### Occlusion and partial observability
 
-Target localization is reliable when the object is within the camera's field of view and degrades when it is occluded. The phone task is a different case, since the instruction itself told Astra where the occluder was.
+Target localization is reliable when the object is within the camera's field of view and degrades when it is occluded. The phone task is a different case, since the instruction itself told Astra where the occluder was. -->
 
-### Awareness of side effects
+<!-- ### Awareness of side effects -->
 
-Astra shows little awareness of how its motions affect nearby objects. Around the apple, it does not act as though the neighboring fruit is delicate or needs to be avoided. With the pillow, once it had a grasp, it threw the pillow aside with no regard for where it landed. That is harmless for a pillow, and arguably efficient, but it is the same behavior that would be a problem around fragile objects. In both cases the planning appears to consider only the target object, with no model of collateral effects.
+<!-- Astra shows little awareness of how its motions affect nearby objects. Around the apple, it does not act as though the neighboring fruit is delicate or needs to be avoided. With the pillow, once it had a grasp, it threw the pillow aside with no regard for where it landed. That is harmless for a pillow, and arguably efficient, but it is the same behavior that would be a problem around fragile objects. In both cases the planning appears to consider only the target object, with no model of collateral effects. -->
 
-### Knowing when the task is done
+<!-- ### Knowing when the task is done -->
 
-**What we saw.** Astra did not reliably end episodes correctly. In 1 of the 7 coffee episodes it reported success when the task was not done, returning *"DONE - Stopping with tilted cup"*. In another it ended the episode with *"Stopping after gripper failure"*. In other episodes it went the other way: after pressing the brew button it **kept sending `move` commands** and never declared the task finished.
+<!-- **What we saw.** Astra did not reliably end episodes correctly. In 1 of the 7 coffee episodes it reported success when the task was not done, returning *"DONE - Stopping with tilted cup"*. In another it ended the episode with *"Stopping after gripper failure"*. In other episodes it went the other way: after pressing the brew button it **kept sending `move` commands** and never declared the task finished.
 
 **Why we think it happens.** Part of the problem is our **interface**. Astra can only answer `move` or `done`. It has no way to say "I failed" or "I need help", so `done` ends up meaning both "I succeeded" and "I am stopping". Both quotes above show Astra knew something had gone wrong, and `done` was the only way it had to stop. Part of it is the **task**: right after the button is pressed, a Keurig looks almost exactly the same as before, and brewing typically starts only after a short delay. Astra cannot hear the machine, so it has little visual evidence that the last step worked, and it keeps checking.
 
-**What might help.** Adding a separate failure or request-for-help response, and stating in the prompt what a finished task looks like.
+**What might help.** Adding a separate failure or request-for-help response, and stating in the prompt what a finished task looks like. -->
 
-### Latency
+### Time and token cost
 
-**What we saw.** Episodes were slow, and much of the time went into **small corrections**. Placements that would already have worked were followed by further small adjustments (*"Retracting cup slightly"*). In the worst case, a fold-clothes episode spent roughly **20 minutes** trying to fold the bottom of the hoodie upward without making progress.
+Astra's inference is both time- and token-intensive. Across all tasks and episodes, each Codex turn takes an average of ** seconds and consumes ** tokens. This amounts to ** tokens per minute of execution, with inference accounting for **% of the total runtime.
+
+<!-- **What we saw.** Episodes were slow, and much of the time went into **small corrections**. Placements that would already have worked were followed by further small adjustments (*"Retracting cup slightly"*). In the worst case, a fold-clothes episode spent roughly **20 minutes** trying to fold the bottom of the hoodie upward without making progress.
 
 **Why we think it happens.** By default Astra sends **one small relative move per model turn**, and every turn waits for fresh camera frames and a full model response. Nothing in the prompt says how close is close enough, so each new frame invites another small correction, and each correction costs a full turn. Every extra adjustment near the machine is also another chance to bump it.
 
@@ -125,4 +144,4 @@ Astra shows little awareness of how its motions affect nearby objects. Around th
 
 *"Grab the apple from the kitchen and bring it to the couch."*
 
-After the apple dropped, Astra detected the failure but was slow to re-plan and resume. It does retry, so recovery itself is not the problem. The delay between detecting the failure and issuing the next corrective action is long.
+After the apple dropped, Astra detected the failure but was slow to re-plan and resume. It does retry, so recovery itself is not the problem. The delay between detecting the failure and issuing the next corrective action is long. -->

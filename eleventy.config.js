@@ -21,6 +21,133 @@ function slugify(value) {
     .replace(/(^-|-$)/g, "");
 }
 
+function sectionNumberFromPath(inputPath) {
+  const match = path.basename(String(inputPath || "")).match(/^(\d+)/);
+  return match ? Number.parseInt(match[1], 10) : null;
+}
+
+function assignHeadingNumbers(state) {
+  const section = sectionNumberFromPath(state.env?.page?.inputPath);
+  if (!section) return;
+
+  let h3 = 0;
+  let h4 = 0;
+  for (const token of state.tokens) {
+    if (token.type !== "heading_open") continue;
+    let number = "";
+    if (token.tag === "h2") {
+      h3 = 0;
+      h4 = 0;
+      number = String(section);
+    } else if (token.tag === "h3") {
+      h3 += 1;
+      h4 = 0;
+      number = `${section}.${h3}`;
+    } else if (token.tag === "h4") {
+      h4 += 1;
+      number = `${section}.${h3}.${h4}`;
+    } else {
+      continue;
+    }
+    token.attrSet("data-heading-number", number);
+  }
+}
+
+function decodeEntities(value) {
+  return String(value || "")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&apos;", "'");
+}
+
+function stripTags(html) {
+  return decodeEntities(
+    String(html || "")
+      .replace(/<span class="heading-number">[\s\S]*?<\/span>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
+}
+
+function headingOutline(html) {
+  const headings = [];
+  const re = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
+  let match;
+  while ((match = re.exec(String(html || "")))) {
+    const attrs = match[2];
+    headings.push({
+      level: Number(match[1]),
+      id: /(?:^|\s)id="([^"]+)"/.exec(attrs)?.[1] || "",
+      number: /data-heading-number="([^"]+)"/.exec(attrs)?.[1] || "",
+      title: stripTags(match[3]),
+    });
+  }
+  return headings;
+}
+
+function nestHeadings(headings) {
+  const root = [];
+  const stack = [];
+  for (const heading of headings) {
+    const node = { ...heading, children: [] };
+    while (stack.length && stack[stack.length - 1].level >= node.level) {
+      stack.pop();
+    }
+    if (stack.length === 0) {
+      root.push(node);
+    } else {
+      stack[stack.length - 1].children.push(node);
+    }
+    stack.push(node);
+  }
+  return root;
+}
+
+function renderToc(items) {
+  if (!items.length) return "";
+  let html = `<ol class="toc-list">`;
+  for (const item of items) {
+    const number = item.number
+      ? `<span class="heading-number">${esc(item.number)}</span> `
+      : "";
+    html += `<li><a href="#${esc(item.id)}">${number}${esc(item.title)}</a>`;
+    if (item.children.length) html += renderToc(item.children);
+    html += `</li>`;
+  }
+  html += `</ol>`;
+  return html;
+}
+
+function sectionsTableOfContents(sections = []) {
+  const headings = [];
+  for (const section of sections) {
+    const extracted = headingOutline(section.templateContent);
+    if (extracted.length) {
+      headings.push(...extracted);
+      continue;
+    }
+    const title = section.data?.nav || "";
+    if (!title) continue;
+    const number = sectionNumberFromPath(section.inputPath);
+    headings.push({
+      level: 2,
+      id: slugify(title),
+      number: number ? String(number) : "",
+      title,
+    });
+  }
+  return renderToc(nestHeadings(headings));
+}
+
+function fallbackSectionId(section) {
+  if (headingOutline(section?.templateContent).length) return "";
+  return slugify(section?.data?.nav);
+}
+
 function esc(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -75,6 +202,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("authorNames", (authors = []) =>
     authors.map((author) => author.name).filter(Boolean).join(", ")
   );
+  eleventyConfig.addFilter("headingOutline", headingOutline);
+  eleventyConfig.addFilter("tableOfContents", sectionsTableOfContents);
+  eleventyConfig.addFilter("fallbackSectionId", fallbackSectionId);
 
   eleventyConfig.addCollection("sections", (api) =>
     api
@@ -93,14 +223,20 @@ export default function (eleventyConfig) {
       katexOptions: { throwOnError: false },
     });
 
+    md.core.ruler.push("heading-numbers", assignHeadingNumbers);
+
     const defaultHeadingOpen = md.renderer.rules.heading_open ||
       ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
     md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
-      const tag = tokens[idx].tag;
-      if (tag === "h2") tokens[idx].attrJoin("class", "title is-3 has-text-centered");
-      if (tag === "h3") tokens[idx].attrJoin("class", "title is-4");
-      if (tag === "h4") tokens[idx].attrJoin("class", "title is-5");
-      return defaultHeadingOpen(tokens, idx, options, env, self);
+      const token = tokens[idx];
+      const tag = token.tag;
+      if (tag === "h2") token.attrJoin("class", "title is-3 has-text-centered");
+      if (tag === "h3") token.attrJoin("class", "title is-4");
+      if (tag === "h4") token.attrJoin("class", "title is-5");
+      const open = defaultHeadingOpen(tokens, idx, options, env, self);
+      const number = token.attrGet("data-heading-number");
+      if (!number) return open;
+      return `${open}<span class="heading-number">${esc(number)}</span> `;
     };
   });
 
@@ -117,7 +253,7 @@ export default function (eleventyConfig) {
     ];
     if (opts.poster) attrs.push(`poster="${esc(localUrl(opts.poster))}"`);
     return mediaFigure({
-      inner: `<video ${attrs.join(" ")}></video>`,
+      inner: `<div class="embed-frame"><video ${attrs.join(" ")}></video></div>`,
       caption: opts.caption || "",
     });
   });
