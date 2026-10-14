@@ -52,9 +52,21 @@ Nunjucks runs **before** Markdown. Use the quotes-and-commas form:
 {% callout "Note" %}
 Highlighted remark.
 {% endcallout %}
+
+{% comment %}
+Editorial comment shown as a block on the page.
+{% endcomment %}
+
+{% comment "Felix" %}
+Optional heading, typically a name or TODO label.
+{% endcomment %}
+
+{% comment { title: "TODO", author: "Ankit" } %}
+Optional title plus author.
+{% endcomment %}
 ```
 
-Object form also works: `{% video { src: "/media/videos/clip.mp4", caption: "Caption", poster: "/media/images/thumb.jpg" } %}`.
+Object form also works: `{% video { src: "/media/videos/clip.mp4", caption: "Caption", poster: "/media/images/thumb.jpg" } %}`. `{% comment %}` renders on the page; HTML `<!-- comments -->` and Nunjucks `{# comments #}` stay hidden. Put `{% comment %}` outside `{% raw %}` blocks, like the other shortcodes.
 
 Grids accept `2`, `3`, or `4` columns (1 column on small screens).
 

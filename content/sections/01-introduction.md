@@ -8,7 +8,12 @@ nav: Introduction
 {% callout "Note" %}
 Optional highlighted remark.
 {% endcallout %}
+
+{% comment "Name" %}
+Visible comment on the page.
+{% endcomment %}
 -->
+{% endraw %}
 
 The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 
 One direction trains vision-language-action (VLA) models on robot data to predict actions directly, which requires substantial data. 
@@ -19,4 +24,3 @@ If reliable, this capability could combine the prompt-based flexibility of gener
 
 To test this potential, we evaluate Astra’s zero-shot performance on **meaningful household tasks** with the Hello Robot Stretch 4 mobile manipulator, asking the model to specify relative joint and base movements directly. 
 Across task evaluations, case studies, and ablations, we characterize the **capabilities** and **limitations** of this approach and examine how **different design choices** shape its robot-control performance.
-{% endraw %}

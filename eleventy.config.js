@@ -199,6 +199,15 @@ function renderCaption(caption) {
   return esc(caption).replace(/`([^`]+)`/g, "<code>$1</code>");
 }
 
+let markdownLib;
+
+function renderInnerMarkdown(content) {
+  const source = String(content || "").trim();
+  if (!source) return "";
+  if (!markdownLib) return source;
+  return markdownLib.render(source);
+}
+
 function mediaFigure({ inner, caption = "", className = "media-block" }) {
   const cap = caption
     ? `<figcaption>${renderCaption(caption)}</figcaption>`
@@ -231,6 +240,7 @@ export default function (eleventyConfig) {
   );
 
   eleventyConfig.amendLibrary("md", (md) => {
+    markdownLib = md;
     md.set({ html: true, linkify: true, typographer: true });
     md.enable("table");
     md.use(markdownItAnchor, { permalink: false, slugify });
@@ -325,6 +335,17 @@ export default function (eleventyConfig) {
       ? `<div class="callout-title">${esc(opts.title)}</div>`
       : "";
     return `<aside class="callout">${heading}${content}</aside>`;
+  });
+
+  eleventyConfig.addPairedShortcode("comment", (content, title = "Comment") => {
+    const opts = typeof title === "object" ? title : { title };
+    const label = opts.title || "Comment";
+    const author = opts.author
+      ? `<span class="comment-block-author">${esc(opts.author)}</span>`
+      : "";
+    const heading = `<div class="comment-block-title">${esc(label)}${author ? ` ${author}` : ""}</div>`;
+    const body = renderInnerMarkdown(content);
+    return `<aside class="comment-block" role="note">${heading}<div class="comment-block-body">${body}</div></aside>`;
   });
 
   return {
