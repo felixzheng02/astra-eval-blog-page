@@ -10,10 +10,13 @@ Optional highlighted remark.
 {% endcallout %}
 -->
 
-The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated efforts to build generalist robots that can handle diverse tasks. 
-These efforts include vision-language-action (VLA) models trained on robot data and systems that prompt general-purpose models to interact with robots. 
-In prompted systems, high-level planning is a common role, while approaches such as Code as Policies (CaP) extend the model’s role to generating executable control programs. 
-Recent community demonstrations and evaluations of Astra suggest that an off-the-shelf general-purpose model can connect task reasoning with motion decisions, selecting numerical robot actions from observations without task-specific fine-tuning. 
-Motivated by this capability, we evaluate Astra’s zero-shot performance on **meaningful household tasks** using a **mobile manipulator** Hello Robot Stretch 4, with the model directly specifying relative joint and base movements. 
-Through task evaluations, case studies, and ablations, we share insights into Astra’s **capabilities** and **limitations** and examine how **different design choices** affect its performance in robot control.
+The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 
+One direction trains vision-language-action (VLA) models on robot data to predict actions directly, which requires substantial data. 
+Another direction prompts general-purpose models to interact with robots, often using them to produce high-level plans that separate controllers then execute. Code as Policies (CaP) goes further by letting models generate executable control programs, yet its performance is still limited by hand-designed perception and control APIs.
+
+Astra points to another possibility: recent community demonstrations and evaluations suggest that an off-the-shelf general-purpose model can connect task reasoning with motion decisions by selecting numerical robot actions directly from observations. 
+If reliable, this capability could combine the prompt-based flexibility of general-purpose models with direct action generation, reducing the need for both robot-specific training and hand-designed control abstractions.
+
+To test this potential, we evaluate Astra’s zero-shot performance on **meaningful household tasks** with the Hello Robot Stretch 4 mobile manipulator, asking the model to specify relative joint and base movements directly. 
+Across task evaluations, case studies, and ablations, we characterize the **capabilities** and **limitations** of this approach and examine how **different design choices** shape its robot-control performance.
 {% endraw %}
