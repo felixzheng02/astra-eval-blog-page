@@ -27,6 +27,12 @@ html {
   margin-top: 0;
 }
 
+.heading-number {
+  display: inline-block;
+  margin-right: 0.4em;
+  font-variant-numeric: tabular-nums;
+}
+
 .publication-body h3.title.is-4,
 .publication-body h4.title.is-5 {
   text-align: left;

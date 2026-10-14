@@ -21,6 +21,38 @@ function slugify(value) {
     .replace(/(^-|-$)/g, "");
 }
 
+function sectionNumberFromPath(inputPath) {
+  const match = path.basename(String(inputPath || "")).match(/^(\d+)/);
+  return match ? Number.parseInt(match[1], 10) : null;
+}
+
+function assignHeadingNumbers(state) {
+  const section = sectionNumberFromPath(state.env?.page?.inputPath);
+  if (!section) return;
+
+  let h3 = 0;
+  let h4 = 0;
+  for (const token of state.tokens) {
+    if (token.type !== "heading_open") continue;
+    let number = "";
+    if (token.tag === "h2") {
+      h3 = 0;
+      h4 = 0;
+      number = String(section);
+    } else if (token.tag === "h3") {
+      h3 += 1;
+      h4 = 0;
+      number = `${section}.${h3}`;
+    } else if (token.tag === "h4") {
+      h4 += 1;
+      number = `${section}.${h3}.${h4}`;
+    } else {
+      continue;
+    }
+    token.attrSet("data-heading-number", number);
+  }
+}
+
 function esc(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -93,14 +125,20 @@ export default function (eleventyConfig) {
       katexOptions: { throwOnError: false },
     });
 
+    md.core.ruler.push("heading-numbers", assignHeadingNumbers);
+
     const defaultHeadingOpen = md.renderer.rules.heading_open ||
       ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
     md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
-      const tag = tokens[idx].tag;
-      if (tag === "h2") tokens[idx].attrJoin("class", "title is-3 has-text-centered");
-      if (tag === "h3") tokens[idx].attrJoin("class", "title is-4");
-      if (tag === "h4") tokens[idx].attrJoin("class", "title is-5");
-      return defaultHeadingOpen(tokens, idx, options, env, self);
+      const token = tokens[idx];
+      const tag = token.tag;
+      if (tag === "h2") token.attrJoin("class", "title is-3 has-text-centered");
+      if (tag === "h3") token.attrJoin("class", "title is-4");
+      if (tag === "h4") token.attrJoin("class", "title is-5");
+      const open = defaultHeadingOpen(tokens, idx, options, env, self);
+      const number = token.attrGet("data-heading-number");
+      if (!number) return open;
+      return `${open}<span class="heading-number">${esc(number)}</span> `;
     };
   });
 
