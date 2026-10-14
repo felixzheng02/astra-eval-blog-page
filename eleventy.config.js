@@ -156,6 +156,17 @@ function esc(value) {
     .replaceAll('"', "&quot;");
 }
 
+function openOffsiteLinksInNewTab(html) {
+  return String(html).replace(/<a\b([^>]*?)>/gi, (match, attrs) => {
+    if (/\btarget\s*=/i.test(attrs)) return match;
+    const hrefMatch = attrs.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const href = hrefMatch ? (hrefMatch[1] ?? hrefMatch[2] ?? hrefMatch[3] ?? "") : "";
+    if (!/^(https?:)?\/\//i.test(href)) return match;
+    const rel = /\brel\s*=/i.test(attrs) ? "" : ' rel="noopener noreferrer"';
+    return `<a${attrs} target="_blank"${rel}>`;
+  });
+}
+
 function asOpts(first, second, firstKey, secondKey) {
   if (first && typeof first === "object" && !Array.isArray(first)) {
     return first;
@@ -182,9 +193,13 @@ function localUrl(src) {
   return `${prefix}${pathname}`;
 }
 
+function renderCaption(caption) {
+  return esc(caption).replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
 function mediaFigure({ inner, caption = "", className = "media-block" }) {
   const cap = caption
-    ? `<figcaption>${esc(caption)}</figcaption>`
+    ? `<figcaption>${renderCaption(caption)}</figcaption>`
     : "";
   return `<figure class="${className}">${inner}${cap}</figure>`;
 }
@@ -240,6 +255,11 @@ export default function (eleventyConfig) {
     };
   });
 
+  eleventyConfig.addTransform("offsite-links-new-tab", (content, outputPath) => {
+    if (!outputPath || !outputPath.endsWith(".html")) return content;
+    return openOffsiteLinksInNewTab(content);
+  });
+
   eleventyConfig.addShortcode("video", (src, caption) => {
     const opts = asOpts(src, caption, "src", "caption");
     if (!opts.src) return "";
@@ -281,7 +301,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addShortcode("figure", (src, caption) => {
     const opts = asOpts(src, caption, "src", "caption");
     if (!opts.src) return "";
-    const alt = esc(opts.alt || opts.caption || "");
+    const alt = esc(opts.alt || String(opts.caption || "").replace(/`([^`]+)`/g, "$1"));
     const width = opts.width ? ` style="max-width:${esc(opts.width)};margin-inline:auto"` : "";
     return mediaFigure({
       inner: `<img src="${esc(localUrl(opts.src))}" alt="${alt}"${width}>`,

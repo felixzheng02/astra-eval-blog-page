@@ -216,6 +216,13 @@ html {
   font-weight: 500;
 }
 
+.media-block figcaption code {
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
 .callout {
   border-left: 4px solid var(--primary-color);
   background: var(--background-accent);

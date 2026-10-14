@@ -25,7 +25,7 @@ nav: Weaknesses
 
 ### Fine-grained manipulation
 
-Astra struggles with fine-grained manipulation in general, for the following possible reasonings: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
+We found taht Astra struggles with fine-grained manipulation in general, for several likely reasons: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
 
 {% videoGrid 3 %}
 {% video "/media/videos/clip-a.mp4", "Open cabinet." %}
