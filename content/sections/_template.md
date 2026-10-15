@@ -21,6 +21,10 @@ Paragraphs go here.
 Optional callout.
 {% endcallout %}
 
+{% comment "Name" %}
+Visible comment on the page.
+{% endcomment %}
+
 | Col A | Col B |
 | --- | --- |
 |  |  |

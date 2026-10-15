@@ -216,6 +216,13 @@ html {
   font-weight: 500;
 }
 
+.media-block figcaption code {
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
 .callout {
   border-left: 4px solid var(--primary-color);
   background: var(--background-accent);
@@ -231,6 +238,45 @@ html {
 }
 
 .callout p:last-child {
+  margin-bottom: 0;
+}
+
+.comment-block {
+  border: 1px solid #f3d39a;
+  border-left: 4px solid #d97706;
+  background: #fffbeb;
+  padding: 0.85rem 1rem;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  margin: 1.15rem 0;
+}
+
+.comment-block-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.6rem;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 0.4rem;
+}
+
+.comment-block-author {
+  font-weight: 600;
+  color: #b45309;
+}
+
+.comment-block-author::before {
+  content: "· ";
+  font-weight: 500;
+  color: #d97706;
+}
+
+.comment-block-body p,
+.comment-block-body li {
+  color: #78350f;
+}
+
+.comment-block-body p:last-child {
   margin-bottom: 0;
 }
 

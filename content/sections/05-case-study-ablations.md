@@ -15,9 +15,34 @@ nav: Case Study & Ablations
 | Cameras |  |
 -->
 
-Task: open the oven, put the bread on the table into the oven, close the oven, then turn it on by rotating the knob.
-
 {% endraw %}
+
+In this section, we describe in detail a case study of Astra controlling the robot to toast a bagel. In order to complete the task, the robot needs to (1) open the oven's lid, (2) grab the bread from the table and transport it into the oven, (3) close the lid, (4) rotate the knob to turn on the oven. This task is not trivial as it requires Astra to plan over the action sequences, manipulate articulated object, place the object precisely into a cluttered space, and fine-grained rotate a small knob. We also run ablation studies on this task to examine the effectiveness of different design choices and components in the system.
+
+{% video "/media/videos/clip-a.mp4", "Show one successful rollout." %}
+
+### Ablation study
+
+The following figures show ablation studies on different design choices. In each study, we only vary that choice while keeping all other choices the default ones.
+
+Metrics to show for each figure: success rate, completion rate, turns, inference time per turn, total execution time, token usage
+
+{% figureGrid 2 %}
+{% figure "/media/images/ablation-reasoning-level.png", "Success rate and completion rate generally increases when reasoning level increases from `none` to `high`, but saturates for `xhigh` and `max`.  Higher reasoning level consumes more inference time and token." %}
+{% figure "/media/images/ablation-embodiment.png", "Embodiment information on vs. off." %}
+{% figure "/media/images/ablation-depth.png", "Depth information on vs. off." %}
+{% figure "/media/images/ablation-chunking.png", "Camera views included." %}
+{% endfigureGrid %}
+
+### Failure modes
+
+We noticed several common failure modes in this task.
+
+{% videoGrid 3 %}
+{% video "/media/videos/clip-a.mp4", "Gripper stuck." %}
+{% video "/media/videos/clip-a.mp4", "Lose contact." %}
+{% video "/media/videos/clip-a.mp4", "Fail to choose appropriate grasping pose." %}
+{% endvideoGrid %}
 
 <!-- This section combines task comparisons with observations from developing the action interface. For the coffee, folding, toy clean-up, and pouring comparisons, our default configuration sends the gripper and head-center camera images, joint state, and the result of the previous command to Astra on every turn. Astra returns one relative joint command per turn, and reasoning effort is set to low. Between episodes we change one or two settings:
 

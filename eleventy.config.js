@@ -125,7 +125,9 @@ function renderToc(items) {
 function sectionsTableOfContents(sections = []) {
   const headings = [];
   for (const section of sections) {
-    const extracted = headingOutline(section.templateContent);
+    const extracted = headingOutline(section.templateContent).filter(
+      (heading) => heading.level <= 3
+    );
     if (extracted.length) {
       headings.push(...extracted);
       continue;
@@ -156,6 +158,17 @@ function esc(value) {
     .replaceAll('"', "&quot;");
 }
 
+function openOffsiteLinksInNewTab(html) {
+  return String(html).replace(/<a\b([^>]*?)>/gi, (match, attrs) => {
+    if (/\btarget\s*=/i.test(attrs)) return match;
+    const hrefMatch = attrs.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const href = hrefMatch ? (hrefMatch[1] ?? hrefMatch[2] ?? hrefMatch[3] ?? "") : "";
+    if (!/^(https?:)?\/\//i.test(href)) return match;
+    const rel = /\brel\s*=/i.test(attrs) ? "" : ' rel="noopener noreferrer"';
+    return `<a${attrs} target="_blank"${rel}>`;
+  });
+}
+
 function asOpts(first, second, firstKey, secondKey) {
   if (first && typeof first === "object" && !Array.isArray(first)) {
     return first;
@@ -182,9 +195,22 @@ function localUrl(src) {
   return `${prefix}${pathname}`;
 }
 
+function renderCaption(caption) {
+  return esc(caption).replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+let markdownLib;
+
+function renderInnerMarkdown(content) {
+  const source = String(content || "").trim();
+  if (!source) return "";
+  if (!markdownLib) return source;
+  return markdownLib.render(source);
+}
+
 function mediaFigure({ inner, caption = "", className = "media-block" }) {
   const cap = caption
-    ? `<figcaption>${esc(caption)}</figcaption>`
+    ? `<figcaption>${renderCaption(caption)}</figcaption>`
     : "";
   return `<figure class="${className}">${inner}${cap}</figure>`;
 }
@@ -214,6 +240,7 @@ export default function (eleventyConfig) {
   );
 
   eleventyConfig.amendLibrary("md", (md) => {
+    markdownLib = md;
     md.set({ html: true, linkify: true, typographer: true });
     md.enable("table");
     md.use(markdownItAnchor, { permalink: false, slugify });
@@ -238,6 +265,11 @@ export default function (eleventyConfig) {
       if (!number) return open;
       return `${open}<span class="heading-number">${esc(number)}</span> `;
     };
+  });
+
+  eleventyConfig.addTransform("offsite-links-new-tab", (content, outputPath) => {
+    if (!outputPath || !outputPath.endsWith(".html")) return content;
+    return openOffsiteLinksInNewTab(content);
   });
 
   eleventyConfig.addShortcode("video", (src, caption) => {
@@ -281,7 +313,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addShortcode("figure", (src, caption) => {
     const opts = asOpts(src, caption, "src", "caption");
     if (!opts.src) return "";
-    const alt = esc(opts.alt || opts.caption || "");
+    const alt = esc(opts.alt || String(opts.caption || "").replace(/`([^`]+)`/g, "$1"));
     const width = opts.width ? ` style="max-width:${esc(opts.width)};margin-inline:auto"` : "";
     return mediaFigure({
       inner: `<img src="${esc(localUrl(opts.src))}" alt="${alt}"${width}>`,
@@ -303,6 +335,17 @@ export default function (eleventyConfig) {
       ? `<div class="callout-title">${esc(opts.title)}</div>`
       : "";
     return `<aside class="callout">${heading}${content}</aside>`;
+  });
+
+  eleventyConfig.addPairedShortcode("comment", (content, title = "Comment") => {
+    const opts = typeof title === "object" ? title : { title };
+    const label = opts.title || "Comment";
+    const author = opts.author
+      ? `<span class="comment-block-author">${esc(opts.author)}</span>`
+      : "";
+    const heading = `<div class="comment-block-title">${esc(label)}${author ? ` ${author}` : ""}</div>`;
+    const body = renderInnerMarkdown(content);
+    return `<aside class="comment-block" role="note">${heading}<div class="comment-block-body">${body}</div></aside>`;
   });
 
   return {

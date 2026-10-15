@@ -15,24 +15,29 @@ nav: Experiment Setup
 -->
 {% endraw %}
 
+{% comment "10/14 meeting" %}
+move metrics to appendix
+{% endcomment %}
+
 ### Robot and environment
 
-All experiments use a Hello Robot Stretch 4, a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base, a lift that moves the arm up and down a vertical spine, a telescoping arm, a three-axis wrist, and a parallel-jaw gripper. Its sensors are an RGB-D camera on the wrist, three cameras on the head (a center camera plus two fish-eye cameras on the left and right), two lidars, and line sensors near the base. Astra sees only some of these sensors, as described below. It never receives lidar or line-sensor data.
 
-Model inference runs off of the robot. A workstation runs the Codex process along with the ROS 2 nodes that build each prompt, and it communicates with the robot over Zenoh. A motion executor on the robot carries out each command and reports the result. Experiments are managed through a dashboard on the workstation that allows for inputting prompts, monitoring camera feeds, viewing Astra calls, and manually stopping Astra.
+We use a [Hello Robot Stretch 4](https://hello-robot.com/stretch-4/), a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base, a lift that moves the arm along a vertical spine, a horizontally telescoping arm, a three-axis wrist, and a parallel-jaw gripper. Stretch has an RGB-D camera on its wrist, three cameras on its head (a center camera plus two fish-eye cameras on the left and right), and other lidar/ground sensors that were excluded from our experiments. A computer onboard the Stretch handles the lower level control logic while a seperate workstation sends relative movement commands across a wireless network.
 
-The evaluation takes place in a mock apartment environment in our lab. The setup has a kitchen (counter, sink, microwave, dishwasher, fridge, a Keurig coffee maker, drawers, and cabinets), a dining table with chairs, a living area with a sofa and tv, and a play area with toy bins next to a bedroom area with a dresser and bed. Several tasks require the robot to drive between these spaces.
+The evaluation takes place in a mock apartment environment in our lab. The setup has a kitchen (counter, sink, toaster, fridge, a Keurig coffee maker, drawers, and cabinets), a dining table with chairs, a living area with a sofa, and a play area with toy bins next to a bedroom area with a dresser.
 
-{% raw %}
 <!-- Setup photo: drop the file in media/images/, then move this line below the endraw so it renders.
 {% figure "/media/images/setup.jpg", "Stretch 4 in the household environment used for evaluation." %}
 -->
-{% endraw %}
 
-### Observation and action interface
+### Observation, action, and control loop
 
+
+{% figure "/media/images/astra_control_loop.png", "Overall Astra control loop." %}
+
+<!-- At each decision step, Astra receives one text message and a set of images:
+>>>>>>> 4d6262101cdd92998905cc3a3f65723cf948baa8
 At each decision step, Astra receives one **text** message describing the prompt, robot state, and previous action results and a set of **images**. The agent also has access to the context of the conversation:
-
 - **Prompt.** A human written one or two sentence prompt often asking for help with a household task.
 - **Images.** A wrist camera (800×500) and the head-center camera (1280×800).
 - **Joint state (proprioception).** The current state of the robot’s joints. Base odometry is not included, so the model must judge where the base is from the cameras.
@@ -81,26 +86,31 @@ By default, each response contains exactly one command. When action chunking is 
 
 Astra runs in a synchronous observe–>inference–>execute loop. Each turn, the program compiles the current joint state and camera images, sends them to Astra, converts its reply into joint deltas, and executes them on the robot. Once the robot reports that its execution is finished, the loop repeats with new observations. The episode ends when Astra replies `done`.
 
-Astra makes every motion decision, including when the task is finished. The supporting software and dashboard do no planning, perception, grasp selection, or navigation. It only formats observations, translates commands, and reports whether each command completed, stopped short, timed out, or was rejected. The robot has no obstacle avoidance. Its only built-in safety feature is force feedback and an operator that watches every run and presses the run-stop if the robot is about to damage itself or its surroundings. Every turn is logged (images, raw reply, reasoning summary, and latency) for metrics and qualitative analysis.
+Astra makes every motion decision, including when the task is finished. The supporting software and dashboard do no planning, perception, grasp selection, or navigation. It only formats observations, translates commands, and reports whether each command completed, stopped short, timed out, or was rejected. The robot has no obstacle avoidance. Its only built-in safety feature is force feedback and an operator that watches every run and presses the run-stop if the robot is about to damage itself or its surroundings. Every turn is logged (images, raw reply, reasoning summary, and latency) for metrics and qualitative analysis. -->
 
-### Model configuration and zero-shot setting
 
-We access Astra (`gpt-6-astra`) through a Codex CLI instance. No information is kept between experiments, and we default to low reasoning.
+### Our implementation
 
-Every task uses the same developer instructions. They state the goal (control a Stretch 4 to complete the user's task), describe the control loop and the inputs, and specify the JSON output format and joint directions. They also include a single safety line ("avoid collisions") and four general hints (TODO: Did we include this in the experiments?):
+We access Astra (`gpt-6-astra`) through a Codex CLI instance. No information is kept between experiments, but the context, which includes the sequence of inputted images and text, is maintained within an episode. Therefore, Astra can refer back to what it has seen or done earlier in an episode.
 
-1. prefer base movements over long arm extensions;
-2. the fingertips sit 10–20 cm in front of the wrist camera, so aim for grasp points about 15 cm away;
-3. keep the current target visible in the wrist camera;
-4. consider several grasp poses and pick the best one.
+Every task uses the same system prompt that states the goal (control a Stretch 4 to complete the user's task), describes the control loop and the inputs, and specify the JSON output format and joint directions. The one-sentence task instruction is appended at the end. Check the appendix for full prompt.
 
-Each episode runs in a single Codex thread where every query, including its images, stays in that thread’s context. A fresh thread starts with every episode, so nothing carries over between trials.
+**Default configuration.** Unless stated otherwise, every result uses the configuration below. The ablations in later sections change one or two settings at a time.
+| Setting | Default | Variants tested |
+| --- | --- | --- |
+| Reasoning effort | Low | Medium, high |
+| Cameras | Wrist + head center | — |
+| Wrist depth | depth api | Color-mapped depth image |
+| Proprioception | On | — |
+| Execution feedback | On | — |
+| Embodiment description | Off | On |
+| Task prompt | Instruction sentence only | Reworded ("…without spilling") |
 
 We consider this setting zero-shot. There is no robot-specific training or fine-tuning, no demonstrations or in-context examples, and no hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt is the same for every task, and only the task sentence changes, except where we explicitly ablate prompt wording.
 
 ### Tasks and evaluation protocol
 
-We chose household tasks that each probe one or more capabilities: **semantic grounding and reasoning** (understanding what an ambiguous instruction refers to), **spatial understanding**, **active perception** (moving to gather missing information), **fine-grained manipulation**, **deformable objects**, **mobile manipulation**, **long-horizon execution and memory**, and **recovery under perturbation**.
+<!-- We chose household tasks that each probe one or more capabilities: **semantic grounding and reasoning** (understanding what an ambiguous instruction refers to), **spatial understanding**, **active perception** (moving to gather missing information), **fine-grained manipulation**, **deformable objects**, **mobile manipulation**, **long-horizon execution and memory**, and **recovery under perturbation**.
 
 | Task (instruction given to Astra) | Capabilities probed |
 | --- | --- |
@@ -110,49 +120,44 @@ We chose household tasks that each probe one or more capabilities: **semantic gr
 | "Make coffee." | Fine-grained manipulation, deformable objects, long-horizon |
 | "Pour the water in the green cup into the pink bowl." | Fine-grained manipulation |
 | "Clean up the play area." | Fine-grained manipulation, long-horizon |
-| "Fold my clothes." | Fine-grained manipulation, deformable objects, long-horizon |
+| "Fold my clothes." | Fine-grained manipulation, deformable objects, long-horizon | -->
 
-{% raw %}
-<!-- Planned, not yet run:
-| "Put the cup into the cabinet" (initially closed; a human closes the door mid-task) | Recovery under perturbation |
-| "Put the object between the sink and the fridge, but keep it close to the sink" | Spatial understanding |
+A paragraph describing tasks evaluated. Two options: (1) inspired by pi0 blog, we adopted "vibe checking"... (2) we chose tasks that evaluate the following axes... for a complete set of task, see appendix.
+
+**Starting conditions.** Since we aim to test Astra in a real household environment, unless stated otherwise, we randomly initialize the robot and objects states in the environment so that they form a reasonable test case, instead of fixing initial conditions. We include detailed starting conditions for each task in the appendix.
+<!-- **Starting conditions.** Each task begins from a documented scene. For the towel task, a clean pink towel, a used darker rag, and tissue paper lie on the kitchen counter, and the person is out of view. For the phone task, two pillows sit on the sofa with the phone under one of them. Later runs add distractors (a banana, a game controller, and a utensil) and swap the pillow order. For the coffee task, the robot faces an open drawer of coffee pods, the Keurig, and a cup. Later runs add punctured pods and a second cup. Before every trial, a script drives the arm to the same saved pose, so the end effector starts in exactly the same position, and we place the base in approximately the same spot. 
+
+Nima change 10/14: Each task begins from a documented scene. We make sure the observable environment, which includes interactable items and obstacles, is the same between runs. Before every trial, we use a script to drive the arm to the same saved pose and physically move the robot base to the approximately same spot.
 -->
-{% endraw %}
 
-**Starting conditions.** Each task begins from a documented scene. We make sure the observable environment, which includes interactable items and obstacles, is the same between runs. Before every trial, we use a script to drive the arm to the same saved pose and physically move the robot base to the approximately same spot.
+**Trials.** Due to the amount of tasks and Astra's slow inference speed, unless stated otherwise, we conducted 5 trials for each task. We consider Astra being strong in a certain aspect and include the task as an example in Section 3 only if that certain behavior appear at least 80% of trials. 
 
-**Trials.** The towel task has the most thorough measurements: 10 valid trials in the default configuration and 5 trials each at medium and high reasoning effort. We ran each other task 3–7 times, often changing the scene or one setting between runs, so we treat those runs as case studies rather than success-rate estimates.
+<!-- The towel task has the most thorough measurements: 10 valid trials in the default configuration and 5 trials each at medium and high reasoning effort. We ran each other task 3–7 times, often changing the scene or one setting between runs, so we treat those runs as case studies rather than success-rate estimates. We discarded runs where a gripper-overload software lock made the servos silently ignore commands (2 default and 3 medium-effort towel trials). 
 
-**Success.** We break each task into ordered sub-goals and score each as achieved (1) or not achieved (0). For example, the towel task's sub-goals are: grab something, grab a towel, lift it without dropping it, go to the person, and hand it over. The completion rate is the mean over sub-goals.
+Nima change 10/14: The towel task has the most thorough measurements: 10 valid trials in the default configuration and 5 trials each at medium and high reasoning effort. We ran each other task 3–7 times, often changing the scene or one setting between runs, so we treat those runs as case studies rather than success-rate estimates.
+-->
 
-**Stopping and interventions.** An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent or the robot is making no progress, such as repeating the same fold for 20 minutes), or when the model returns an invalid output. We record every human intervention in the trial notes. In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals.
+<!-- **Success.** We break each task into ordered sub-goals and score each as achieved (1), not achieved (0), or partially achieved (0.5). For example, the towel task's sub-goals are: grab something, grab a towel, grab the used rag, lift it without dropping it, go to the person, and hand it over. The completion rate is the mean over sub-goals. Because "something I can clean the table with" could reasonably mean either the clean towel or the used rag, we report completion both with and without the rag-choice sub-goal. 
+
+Nima change 10/14: We break each task into ordered sub-goals and score each as achieved (1) or not achieved (0). For example, the towel task's sub-goals are: grab something, grab a towel, lift it without dropping it, go to the person, and hand it over. The completion rate is the mean over sub-goals.
+-->
+
+**Stopping and interventions.** An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent), when the model returns an invalid output, or when time runs out. We specify different timeout limits for different tasks (details are in appendix). In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals.
+
+<!-- Nima change 10/14: An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent or the robot is making no progress, such as repeating the same fold for 20 minutes), or when the model returns an invalid output. We record every human intervention in the trial notes. In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals. -->
 
 **Metrics.**
 
 | Metric | Definition |
 | --- | --- |
 | Completion rate | Fraction of sub-goals achieved |
+| Turns | Total codex turns |
 | Overall time | Time from episode start to end |
-| Inference time | Sum of model “thinking” time over all turns |
-| Execution time | Time the robot spends moving, from when each command is sent until its joints stop |
+| Inference time per turn | model inference latency per call |
+| Total Execution time | Time the robot spends moving, from when each command is sent until its joints stop |
 | False-success declarations | Times Astra says `done` when the task is not complete |
-| Unnecessary actions | Actions that do not advance the task, including continuing after the task is already complete. Includes redos. |
+| Unnecessary actions | Actions that do not advance the task, including continuing after the task is already complete |
 | Collisions | Contacts with the environment or objects that were not meant to be touched |
+| Interruption by human | Interrupted by human |
 | Token usage | Input tokens (including cached input) plus output tokens (including reasoning) |
 
-Inference and execution can overlap, so they do not always add up to the overall time. We compute the timing and token metrics from the dashboard logs and Codex session logs. An observer records the other metrics.
-
-**Default configuration.** Unless stated otherwise, every result uses the configuration below. The ablations in later sections change one or two settings at a time.
-
-| Setting | Default | Variants tested |
-| --- | --- | --- |
-| Reasoning effort | Low | Medium, high |
-| Cameras | Wrist + head center | — |
-| Resolution | 800×500 wrist, 1280×800 head | — |
-| Wrist depth | Off | Color-mapped depth image |
-| Proprioception | On | — |
-| Execution feedback | On | — |
-| Embodiment description | Off | On |
-| Memory | Within the episode only | — |
-| Action chunking | Off (one command per turn) | *H* = 4, *K* = 2 |
-| Task prompt | Instruction sentence only | Reworded ("…without spilling") |

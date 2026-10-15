@@ -21,13 +21,17 @@ Paragraphs go here.
 Optional callout.
 {% endcallout %}
 
+{% comment "Name" %}
+Visible comment on the page.
+{% endcomment %}
+
 | Col A | Col B |
 | --- | --- |
 |  |  |
 -->
 {% endraw %}
 
-We set out to see how far an off-the-shelf model can go when it directly controls a real **mobile manipulator** in a **household setting**, with no fine-tuning and no demonstrations. "Off-the-shelf" applies to the model, not to the system around it. Astra's output is a relative joint command, but everything it decides from comes through a **perception and sensing pipeline** we built around it. That pipeline delivers fresh gripper and head camera frames on every turn, an optional colorized depth image from the wrist, joint-state proprioception, feedback from the robot's executor on whether each command was accepted, rejected, or timed out, and an optional description of the robot's body and its URDF. Our observations suggest that performance depends on **what Astra can observe, how actions are described, and how the controller responds to contact**.
+<!-- We set out to see how far an off-the-shelf model can go when it directly controls a real **mobile manipulator** in a **household setting**, with no fine-tuning and no demonstrations. "Off-the-shelf" applies to the model, not to the system around it. Astra's output is a relative joint command, but everything it decides from comes through a **perception and sensing pipeline** we built around it. That pipeline delivers fresh gripper and head camera frames on every turn, an optional colorized depth image from the wrist, joint-state proprioception, feedback from the robot's executor on whether each command was accepted, rejected, or timed out, and an optional description of the robot's body and its URDF. Our observations suggest that performance depends on **what Astra can observe, how actions are described, and how the controller responds to contact**.
 
 Across making coffee, folding clothes, cleaning up toys, pouring water, opening doors, and loading a cup into the dishwasher, the picture has two sides.
 
@@ -41,4 +45,4 @@ The **action interface** also mattered. Astra's reported explanations exposed ax
 
 {% callout "Takeaway" %}
 Astra often plans like a capable household assistant, but precise, reliable execution remains difficult. Our runs point to three priorities: better observations for judging distance and contact, action descriptions the model can map consistently to movements, and controller safeguards that respond independently of the model.
-{% endcallout %}
+{% endcallout %} -->
