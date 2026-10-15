@@ -2,7 +2,7 @@
 nav: Case Study & Ablations
 ---
 
-## Case Study & Ablations
+## Case Study and Ablations
 
 {% raw %}
 <!-- Extra setup notes, extra rollouts, hardware tables.

@@ -1,8 +1,8 @@
 ---
-nav: Where We Were Impressed
+nav: Strengths
 ---
 
-## Where We Were Impressed
+## Strengths
 
 {% raw %}
 <!-- Numbered findings, then a video grid. Copy this block per subsection.
@@ -20,33 +20,28 @@ nav: Where We Were Impressed
 The behaviors below come from a small number of episodes (for example, 7 for making coffee and 4 for the toy clean-up), often run under different settings. They are <strong>individual observations, not statistically significant results</strong>. They show what Astra <em>can</em> do, not how often it does it, and we do not take them as proof of higher-order reasoning. Where we quote Astra's reasoning, we are quoting the summary the model reports about itself, which may not reflect how it actually arrived at an action.
 {% endcallout %} -->
 
-{% comment "10/14 meeting" %}
-4/5 trials info here
-
-rename title to strengths
-
-some level of failure recovery (something we don't see in traditional robotics)
-{% endcomment %}
-
 <!-- ### Correct motion intention -->
+
+What stood out was not any single task Astra completed, but how much coherent robotic behavior emerged from using a general-purpose VLM zero-shot. Across unfamiliar household tasks, it could often infer what to do, translate that intent into coordinated physical actions, and adapt when its first attempt fell short.
+
 ### Zero-shot generalization over diverse tasks
 
 Deployed zero-shot in a household environment, Astra can complete a diverse range of tasks, suggesting that a powerful VLM can transfer its knowledge to the physical world and generalize across robotic tasks.
 
 {% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "First clip: what this trial shows." %}
-{% video "/media/videos/clip-b.mp4", "Second clip: short description." %}
-{% video "/media/videos/clip-c.mp4", "Third clip." %}
-{% video "/media/videos/clip-d.mp4", "Fourth clip." %}
-{% video "/media/videos/clip-e.mp4", "Fifth clip." %}
-{% video "/media/videos/clip-f.mp4", "Sixth clip." %}
+{% video "/media/videos/clip-a.mp4", "Pick an orange from the table and put it inside the basket on the counter." %}
+{% video "/media/videos/clip-b.mp4", "Open the cabinet." %}
+{% video "/media/videos/clip-c.mp4", "Fold a towel." %}
+{% video "/media/videos/clip-d.mp4", "Turn on the sink faucet." %}
+{% video "/media/videos/clip-e.mp4", "Make coffee (specific instruction)." %}
+{% video "/media/videos/clip-f.mp4", "Wipe surface with cloth." %}
 {% endvideoGrid %}
 
 For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
 
 {% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "First clip: what this trial shows." %}
-{% video "/media/videos/clip-b.mp4", "Second clip: short description." %}
+{% video "/media/videos/clip-a.mp4", "Pour water." %}
+{% video "/media/videos/clip-b.mp4", "Make coffee." %}
 {% video "/media/videos/clip-c.mp4", "Third clip." %}
 {% endvideoGrid %}
 
@@ -187,3 +182,12 @@ We found that Astra can generate motion commands that closely follow detailed na
 {% endvideoGrid %}
 
 <!-- In one dishwasher trial, we instructed Astra to move the base rather than keep extending the arm toward the target. It changed its behavior and used the base, providing an example of how a concrete movement instruction can influence action selection. -->
+
+### Failure recovery
+
+When Astra encounters difficulty completing a task, it autonomously attempts alternative strategies. This works particularly well when the source of the difficulty lies within the current step. Its recovery is less effective when the problem stems from an earlier step; see [Fails to reason about dependencies across steps](#fails-to-reason-about-dependencies-across-steps).
+
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "Open the oven." %}
+{% video "/media/videos/clip-a.mp4", "second example." %}
+{% endvideoGrid %}

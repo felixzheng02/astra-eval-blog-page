@@ -23,15 +23,11 @@ nav: Weaknesses
 
 <!-- The failures we saw were not random. Most of them happened in the **same few situations**: the robot's own arm blocking its view, contact and force deciding the outcome, or Astra having nothing in its interface to report that something had gone wrong. Many of these situations are hard for **any** system that works from camera images alone, not just for Astra. Where we can, we describe what we saw, what we think is causing it, and what might help. The same caveat as before applies: these are counts from a handful of episodes, not measured failure rates. -->
 
-{% comment "10/14 meeting" %}
-collision/scene awareness
-
-define 'fine-grained manipulation'
-{% endcomment %}
+[intro/topic sentence]
 
 ### Fine-grained manipulation
 
-We found taht Astra struggles with fine-grained manipulation in general, for several likely reasons: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
+We found that Astra struggles with fine-grained manipulation in general, where by "fine-grained", we mean: ***. We think several reasons are likely: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
 
 {% videoGrid 3 %}
 {% video "/media/videos/clip-a.mp4", "Open cabinet." %}
@@ -87,13 +83,13 @@ Placement is where the apple task failed. In two of three attempts the apple did
 
 Persistence seems to mask this imprecision when retries are free, as with the pillow, but not when a failed grasp has a physical cost, as with the dropped apple. -->
 
-### Repeated failure modes
+### Fails to reason about dependencies across steps
 
-We noticed that Astra is inclined to attempt solving the task in the most obvious way, and often fails to reason about failures and try a different approach accordingly.
+Astra struggles to reason about dependencies across steps. It often fails to anticipate how the execution of an earlier action will affect later ones. When a later step becomes difficult, it tends to treat the problem in isolation rather than trace it back to an earlier decision and revise that decision. As a result, it may repeatedly try alternative approaches to the current step even when the problem can only be resolved by revisiting a previous one. This differs from its ability to [recover from failures within the current step](#failure-recovery), where trying a different approach can resolve the problem.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "Open the oven's door." %}
-{% video "/media/videos/clip-a.mp4", "Stack the bottled water onto the cup." %}
+{% video "/media/videos/clip-a.mp4", "Another example." %}
+{% video "/media/videos/clip-a.mp4", "Stack the bottled water on top of the cup. To keep the cup visible to the wrist camera while stacking the bottle, the robot must first grasp the bottle from the top. Astra consistently failed to anticipate this requirement, even when we included relevant hints in the system prompt." %}
 {% endvideoGrid %}
 
 <!-- ### Spatial reasoning -->
@@ -137,6 +133,10 @@ Target localization is reliable when the object is within the camera's field of 
 **Why we think it happens.** Part of the problem is our **interface**. Astra can only answer `move` or `done`. It has no way to say "I failed" or "I need help", so `done` ends up meaning both "I succeeded" and "I am stopping". Both quotes above show Astra knew something had gone wrong, and `done` was the only way it had to stop. Part of it is the **task**: right after the button is pressed, a Keurig looks almost exactly the same as before, and brewing typically starts only after a short delay. Astra cannot hear the machine, so it has little visual evidence that the last step worked, and it keeps checking.
 
 **What might help.** Adding a separate failure or request-for-help response, and stating in the prompt what a finished task looks like. -->
+
+### Scene awareness
+
+collisions, 
 
 ### Time and token cost
 

@@ -15,10 +15,6 @@ nav: Experiment Setup
 -->
 {% endraw %}
 
-{% comment "10/14 meeting" %}
-move metrics to appendix
-{% endcomment %}
-
 ### Robot and environment
 
 
@@ -91,22 +87,23 @@ Astra makes every motion decision, including when the task is finished. The supp
 
 ### Our implementation
 
-We access Astra (`gpt-6-astra`) through a Codex CLI instance. No information is kept between experiments, but the context, which includes the sequence of inputted images and text, is maintained within an episode. Therefore, Astra can refer back to what it has seen or done earlier in an episode.
+We access Astra (`gpt-6-astra`) through a Codex CLI instance. It retains no information across experiments, but within each episode, its context preserves the sequence of image and text inputs. This allows Astra to refer back to what it has seen or done earlier in that episode.
 
-Every task uses the same system prompt that states the goal (control a Stretch 4 to complete the user's task), describes the control loop and the inputs, and specify the JSON output format and joint directions. The one-sentence task instruction is appended at the end. Check the appendix for full prompt.
+For every task, we use a uniform system prompt that specifies the overall objective (controlling a Stretch 4 robot to complete the user's task) and outlines the control loop, including its inputs and the required JSON output format. The prompt also includes additional details that may be helpful, such as robot embodiment information and safety guidelines. At the end, the one-sentence task instruction is appended. Importantly, there is no task-specific information, hints, or human priors embedded in our prompt. See the appendix for the full prompt.
 
-**Default configuration.** Unless stated otherwise, every result uses the configuration below. The ablations in later sections change one or two settings at a time.
-| Setting | Default | Variants tested |
-| --- | --- | --- |
-| Reasoning effort | Low | Medium, high |
-| Cameras | Wrist + head center | — |
-| Wrist depth | depth api | Color-mapped depth image |
-| Proprioception | On | — |
-| Execution feedback | On | — |
-| Embodiment description | Off | On |
-| Task prompt | Instruction sentence only | Reworded ("…without spilling") |
+**Configurations.** Unless otherwise noted, all results are reported using the default configuration outlined below. Alternative variants are evaluated in the ablation experiments described in [Case Study and Ablations](05-case-study-ablations.md#case-study--ablations).
 
-We consider this setting zero-shot. There is no robot-specific training or fine-tuning, no demonstrations or in-context examples, and no hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt is the same for every task, and only the task sentence changes, except where we explicitly ablate prompt wording.
+| Setting                 | Default                                             | Variants Tested                                 |
+|-------------------------|-----------------------------------------------------|-------------------------------------------------|
+| Reasoning effort        | high                                                | low, medium, xhigh, max                         |
+| Cameras                 | All cameras (head left + head center + head right + wrist) | head center + wrist; head center only; wrist only |
+| Wrist depth             | API for Astra to query depths from image coordinates| Color-mapped depth image; no depth                        |
+| Proprioception          | On                                                  | Off                                               |
+| Execution feedback      | On                                                  | Off                                               |
+| Embodiment description  | On                                                  | Off                                             |
+| Task prompt             | Task instruction only                               | Task instruction with detailed motion guidance   |
+
+**Zero-shot claim.** We regard this configuration as genuinely zero-shot: there is no robot-specific training, fine-tuning, demonstrations, in-context examples, or hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt remains identical for every task and contains no task-specific hints; only the task instruction changes, except in cases where we explicitly test prompt variations.
 
 ### Tasks and evaluation protocol
 
@@ -146,9 +143,9 @@ Nima change 10/14: We break each task into ordered sub-goals and score each as a
 
 <!-- Nima change 10/14: An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent or the robot is making no progress, such as repeating the same fold for 20 minutes), or when the model returns an invalid output. We record every human intervention in the trial notes. In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals. -->
 
-**Metrics.**
+**Metrics.** We measure metrics including completion rate, inference time, collisions, etc. for each rollout. We include full list of metrics and results in appendix.
 
-| Metric | Definition |
+<!-- | Metric | Definition |
 | --- | --- |
 | Completion rate | Fraction of sub-goals achieved |
 | Turns | Total codex turns |
@@ -159,5 +156,5 @@ Nima change 10/14: We break each task into ordered sub-goals and score each as a
 | Unnecessary actions | Actions that do not advance the task, including continuing after the task is already complete |
 | Collisions | Contacts with the environment or objects that were not meant to be touched |
 | Interruption by human | Interrupted by human |
-| Token usage | Input tokens (including cached input) plus output tokens (including reasoning) |
+| Token usage | Input tokens (including cached input) plus output tokens (including reasoning) | -->
 
