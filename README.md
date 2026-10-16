@@ -38,6 +38,8 @@ Nunjucks runs **before** Markdown. Use the quotes-and-commas form:
 {% youtube "xxxxxxxxxxx", "YouTube caption" %}
 {% vimeo "000000000", "Vimeo caption" %}
 {% figure "/media/images/plot.png", "Figure caption" %}
+{% figure "/media/images/astra_control_loop.png", "Overall Astra control loop.", "control-loop" %}
+As shown in {% figref "control-loop" %}, the loop is synchronous.
 
 {% videoGrid 2 %}
 {% video "/media/videos/left.mp4", "Left" %}
@@ -69,6 +71,8 @@ Optional title plus author.
 Object form also works: `{% video { src: "/media/videos/clip.mp4", caption: "Caption", poster: "/media/images/thumb.jpg" } %}`. `{% comment %}` renders on the page; HTML `<!-- comments -->` and Nunjucks `{# comments #}` stay hidden. Put `{% comment %}` outside `{% raw %}` blocks, like the other shortcodes.
 
 Grids accept `2`, `3`, or `4` columns (1 column on small screens).
+
+`{% figure %}` captions are numbered in page order (`Figure 1.`, `Figure 2.`, …). Pass a stable label as the third argument (or `label:` in object form) and cite it with `{% figref "that-label" %}` so the number stays correct if you reorder figures. With no label, the filename stem is the key (`plot.png` → `{% figref "plot" %}`). Do not hard-code “Figure 1” in the caption or the prose.
 
 Markdown tables, lists, and headings work as usual:
 

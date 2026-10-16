@@ -1,5 +1,5 @@
 ---
-nav: Case Study & Ablations
+nav: Case Study and Ablations
 ---
 
 ## Case Study and Ablations

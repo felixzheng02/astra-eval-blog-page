@@ -208,11 +208,108 @@ function renderInnerMarkdown(content) {
   return markdownLib.render(source);
 }
 
-function mediaFigure({ inner, caption = "", className = "media-block" }) {
-  const cap = caption
-    ? `<figcaption>${renderCaption(caption)}</figcaption>`
-    : "";
-  return `<figure class="${className}">${inner}${cap}</figure>`;
+function figureKey(opts, fallbackSrc = "") {
+  const raw = opts.label || opts.id;
+  if (raw != null && String(raw).trim() !== "") {
+    return slugify(raw).replace(/^fig-/, "");
+  }
+  const src = String(opts.src || fallbackSrc || "");
+  const base = path.basename(src, path.extname(src));
+  return slugify(base);
+}
+
+function mediaFigure({
+  inner,
+  caption = "",
+  className = "media-block",
+  numberedKey = "",
+}) {
+  const attrs = [`class="${className}"`];
+  if (numberedKey) {
+    attrs.push(`id="fig-${esc(numberedKey)}"`);
+    attrs.push(`data-figure="${esc(numberedKey)}"`);
+  }
+  const cap =
+    caption || numberedKey
+      ? `<figcaption>${renderCaption(caption)}</figcaption>`
+      : "";
+  return `<figure ${attrs.join(" ")}>${inner}${cap}</figure>`;
+}
+
+function lookupFigure(numbers, raw) {
+  const key = slugify(raw).replace(/^fig-/, "");
+  return (
+    numbers.get(key) ||
+    numbers.get(String(raw || "")) ||
+    numbers.get(`fig-${key}`) ||
+    null
+  );
+}
+
+function numberFigures(html) {
+  const comments = [];
+  let output = String(html).replace(/<!--[\s\S]*?-->/g, (comment) => {
+    comments.push(comment);
+    return `<!--NUMFIG_COMMENT_${comments.length - 1}-->`;
+  });
+
+  const numbers = new Map();
+  const usedIds = new Set();
+  let n = 0;
+
+  output = output.replace(
+    /<figure\b([^>]*)>([\s\S]*?)<\/figure>/gi,
+    (full, attrs, inner) => {
+      const keyMatch = /\bdata-figure="([^"]*)"/.exec(attrs);
+      if (!keyMatch || /\bdata-figure-number="/.test(attrs)) return full;
+
+      n += 1;
+      const key = slugify(keyMatch[1]).replace(/^fig-/, "") || `figure-${n}`;
+      const requestedId = /\bid="([^"]*)"/.exec(attrs)?.[1] || `fig-${key}`;
+      let id = requestedId;
+      if (usedIds.has(id)) {
+        let i = 2;
+        while (usedIds.has(`${requestedId}-${i}`)) i += 1;
+        id = `${requestedId}-${i}`;
+      }
+      usedIds.add(id);
+
+      const record = { n, id };
+      numbers.set(key, record);
+      numbers.set(id, record);
+      numbers.set(id.replace(/^fig-/, ""), record);
+
+      const nextAttrs = `${attrs
+        .replace(/\s*\bid="[^"]*"/i, "")
+        .replace(/\s*\bdata-figure(?:="[^"]*")?/i, "")
+        .replace(/\s*\bdata-figure-number="[^"]*"/i, "")} id="${esc(id)}" data-figure="${esc(key)}" data-figure-number="${n}"`;
+
+      const label = `<span class="figure-number">Figure&nbsp;${n}.</span>`;
+      const capMatch = inner.match(/<figcaption([^>]*)>([\s\S]*?)<\/figcaption>/i);
+      const capAttrs = capMatch?.[1] || "";
+      const capBody = (capMatch?.[2] || "").trim();
+      const figcaption = `<figcaption${capAttrs}>${label}${capBody ? ` ${capBody}` : ""}</figcaption>`;
+      const withoutCap = inner.replace(/<figcaption[\s\S]*?<\/figcaption>/i, "");
+      return `<figure${nextAttrs}>${withoutCap}${figcaption}</figure>`;
+    }
+  );
+
+  output = output.replace(
+    /<a\b([^>]*\bdata-figref="([^"]+)"[^>]*)>([\s\S]*?)<\/a>/gi,
+    (full, attrs, ref) => {
+      const found = lookupFigure(numbers, ref);
+      const label = found ? `Figure&nbsp;${found.n}` : "Figure&nbsp;?";
+      const hrefId = found?.id || `fig-${slugify(ref).replace(/^fig-/, "")}`;
+      let nextAttrs = attrs.replace(/\s*\bhref="[^"]*"/i, "");
+      if (!/\bclass=/.test(nextAttrs)) nextAttrs += ` class="figure-ref"`;
+      return `<a href="#${esc(hrefId)}"${nextAttrs}>${label}</a>`;
+    }
+  );
+
+  return output.replace(
+    /<!--NUMFIG_COMMENT_(\d+)-->/g,
+    (_, index) => comments[Number(index)]
+  );
 }
 
 export default function (eleventyConfig) {
@@ -267,6 +364,11 @@ export default function (eleventyConfig) {
     };
   });
 
+  eleventyConfig.addTransform("number-figures", (content, outputPath) => {
+    if (!outputPath || !outputPath.endsWith(".html")) return content;
+    return numberFigures(content);
+  });
+
   eleventyConfig.addTransform("offsite-links-new-tab", (content, outputPath) => {
     if (!outputPath || !outputPath.endsWith(".html")) return content;
     return openOffsiteLinksInNewTab(content);
@@ -310,15 +412,24 @@ export default function (eleventyConfig) {
     });
   });
 
-  eleventyConfig.addShortcode("figure", (src, caption) => {
+  eleventyConfig.addShortcode("figure", (src, caption, label) => {
     const opts = asOpts(src, caption, "src", "caption");
+    if (typeof src !== "object" && label) opts.label = label;
     if (!opts.src) return "";
     const alt = esc(opts.alt || String(opts.caption || "").replace(/`([^`]+)`/g, "$1"));
     const width = opts.width ? ` style="max-width:${esc(opts.width)};margin-inline:auto"` : "";
     return mediaFigure({
       inner: `<img src="${esc(localUrl(opts.src))}" alt="${alt}"${width}>`,
       caption: opts.caption || "",
+      numberedKey: figureKey(opts, opts.src),
     });
+  });
+
+  eleventyConfig.addShortcode("figref", (id) => {
+    const opts = asOpts(id, null, "id", "id");
+    const key = figureKey(opts);
+    if (!key) return "";
+    return `<a class="figure-ref" href="#fig-${esc(key)}" data-figref="${esc(key)}">Figure</a>`;
   });
 
   eleventyConfig.addPairedShortcode("videoGrid", (content, columns = 2) => {

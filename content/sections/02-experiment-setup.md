@@ -28,8 +28,19 @@ The evaluation takes place in a mock apartment environment in our lab. The setup
 
 ### Observation, action, and control loop
 
+{% figure "/media/images/system-overview.png", "Overall Astra control loop.", "system-overview" %}
 
-{% figure "/media/images/astra_control_loop.png", "Overall Astra control loop." %}
+{% figref "system-overview" %} shows the overall control loop. The system runs in a synchronous `observe -> inference –> execute` loop. In each turn, Astra receives observations, robot proprioception, and previous execution feedback, optionally access depth information through a provided API, and then outputs joint relative position command; the robot executes the command, and new observations and execution feedback are sent to Astra after execution finishes.
+
+**Depth API.** We provide Astra an API that takes in a set of coordinates in wrist camera image space and return the corresponding depths in centimeters in wrist camera frame. During each turn, Astra decides whether or not to use the API, and if so, what coordinates to query.
+
+**Output action.** During each turn, Astra is asked to output either `move`, together with each joint's relative position, or `done`, which indicates task completion. The complete action schema is provided in the appendix.
+
+**Execution feedback.** There are 4 types of execution feedback for each joint:
+1. `completed`: target joint position reached;
+2. `stopped_short`: joint stops moving, but target joint position not reached;
+3. `timeout`: joint still tries to move, but target joint position not reached within a certain timeout limit;
+4. `rejected`: target joint position out of limit.
 
 <!-- At each decision step, Astra receives one text message and a set of images:
 >>>>>>> 4d6262101cdd92998905cc3a3f65723cf948baa8
@@ -95,8 +106,8 @@ For every task, we use a uniform system prompt that specifies the overall object
 
 | Setting                 | Default                                             | Variants Tested                                 |
 |-------------------------|-----------------------------------------------------|-------------------------------------------------|
-| Reasoning effort        | high                                                | low, medium, xhigh, max                         |
-| Cameras                 | All cameras (head left + head center + head right + wrist) | head center + wrist; head center only; wrist only |
+| Reasoning effort        | high                                                | low, ultra                         |
+| Cameras                 | All cameras (head left + head center + head right + wrist) | head center + wrist |
 | Wrist depth             | API for Astra to query depths from image coordinates| Color-mapped depth image; no depth                        |
 | Proprioception          | On                                                  | Off                                               |
 | Execution feedback      | On                                                  | Off                                               |
@@ -119,15 +130,21 @@ For every task, we use a uniform system prompt that specifies the overall object
 | "Clean up the play area." | Fine-grained manipulation, long-horizon |
 | "Fold my clothes." | Fine-grained manipulation, deformable objects, long-horizon | -->
 
-A paragraph describing tasks evaluated. Two options: (1) inspired by pi0 blog, we adopted "vibe checking"... (2) we chose tasks that evaluate the following axes... for a complete set of task, see appendix.
+{% comment "Felix" %}
+Two options: (1) inspired by pi0 blog, we adopted "vibe checking"... (2) we chose tasks that evaluate the following axes... for a complete set of task, see appendix.
+{% endcomment %}
 
-**Starting conditions.** Since we aim to test Astra in a real household environment, unless stated otherwise, we randomly initialize the robot and objects states in the environment so that they form a reasonable test case, instead of fixing initial conditions. We include detailed starting conditions for each task in the appendix.
+Inspired by [Evaluating $\pi_0$ in the Wild](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/), we adopted a "vibe-checking" approach, improvising tasks rather than relying on a standard benchmark. For each task, we defined success criteria, measured relevant metrics, and documented failure modes. Full experiment logs are included in the appendix.
+
+**Trials.** Given the number of tasks and Astra’s relatively slow inference speed, unless otherwise specified, we performed 5 trials per task. We consider Astra to demonstrate reliable capability in a particular aspect, and include that task as an illustrative example in [Strengths](03-strengths.md#strengths), only if the relevant behavior is observed in at least 80% of trials.
+
+**Metrics.** We measure metrics including completion rate, inference time, token usage, etc. for each rollout. We include full list of metrics and results in appendix.
+
+**Starting conditions.** Because we aim to test Astra in a real household environment, we varied the initial states of the robot and objects within the bounds of a reasonable test case, unless otherwise noted. Detailed starting conditions for each task are included in the appendix.
 <!-- **Starting conditions.** Each task begins from a documented scene. For the towel task, a clean pink towel, a used darker rag, and tissue paper lie on the kitchen counter, and the person is out of view. For the phone task, two pillows sit on the sofa with the phone under one of them. Later runs add distractors (a banana, a game controller, and a utensil) and swap the pillow order. For the coffee task, the robot faces an open drawer of coffee pods, the Keurig, and a cup. Later runs add punctured pods and a second cup. Before every trial, a script drives the arm to the same saved pose, so the end effector starts in exactly the same position, and we place the base in approximately the same spot. 
 
 Nima change 10/14: Each task begins from a documented scene. We make sure the observable environment, which includes interactable items and obstacles, is the same between runs. Before every trial, we use a script to drive the arm to the same saved pose and physically move the robot base to the approximately same spot.
 -->
-
-**Trials.** Due to the amount of tasks and Astra's slow inference speed, unless stated otherwise, we conducted 5 trials for each task. We consider Astra being strong in a certain aspect and include the task as an example in Section 3 only if that certain behavior appear at least 80% of trials. 
 
 <!-- The towel task has the most thorough measurements: 10 valid trials in the default configuration and 5 trials each at medium and high reasoning effort. We ran each other task 3–7 times, often changing the scene or one setting between runs, so we treat those runs as case studies rather than success-rate estimates. We discarded runs where a gripper-overload software lock made the servos silently ignore commands (2 default and 3 medium-effort towel trials). 
 
@@ -139,11 +156,9 @@ Nima change 10/14: The towel task has the most thorough measurements: 10 valid t
 Nima change 10/14: We break each task into ordered sub-goals and score each as achieved (1) or not achieved (0). For example, the towel task's sub-goals are: grab something, grab a towel, lift it without dropping it, go to the person, and hand it over. The completion rate is the mean over sub-goals.
 -->
 
-**Stopping and interventions.** An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent), when the model returns an invalid output, or when time runs out. We specify different timeout limits for different tasks (details are in appendix). In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals.
+**Stopping and interventions.** An episode ends when Astra declares `done`, the operator intervenes to prevent potential damage, the model produces an invalid output, or the time limit for the task is reached. We set different timeout thresholds for each task (see appendix for details).
 
 <!-- Nima change 10/14: An episode ends when Astra declares `done`, when the operator stops it (because damage is imminent or the robot is making no progress, such as repeating the same fold for 20 minutes), or when the model returns an invalid output. We record every human intervention in the trial notes. In a few difficult tasks, such as making coffee, the operator sometimes completes a step the robot is stuck on (for example, closing the Keurig lid). That sub-goal is scored as failed, but the episode continues, and the robot can still earn credit for the remaining sub-goals. -->
-
-**Metrics.** We measure metrics including completion rate, inference time, collisions, etc. for each rollout. We include full list of metrics and results in appendix.
 
 <!-- | Metric | Definition |
 | --- | --- |
