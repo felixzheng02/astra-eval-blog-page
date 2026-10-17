@@ -425,6 +425,22 @@ export default function (eleventyConfig) {
     });
   });
 
+  eleventyConfig.addShortcode("plotly", (src, caption, label) => {
+    const opts = asOpts(src, caption, "src", "caption");
+    if (typeof src !== "object" && label) opts.label = label;
+    if (!opts.src) return "";
+    const alt = esc(opts.alt || String(opts.caption || "").replace(/`([^`]+)`/g, "$1"));
+    const fallback = opts.fallback
+      ? `<noscript><img src="${esc(localUrl(opts.fallback))}" alt="${alt}"></noscript>`
+      : "";
+    return mediaFigure({
+      inner: `<div class="plotly-frame" data-plotly-src="${esc(localUrl(opts.src))}" role="img" aria-label="${alt}"><span class="plotly-frame-status">Loading interactive figure…</span>${fallback}</div>`,
+      caption: opts.caption || "",
+      className: "media-block plotly-block",
+      numberedKey: figureKey(opts, opts.src),
+    });
+  });
+
   eleventyConfig.addShortcode("figref", (id) => {
     const opts = asOpts(id, null, "id", "id");
     const key = figureKey(opts);

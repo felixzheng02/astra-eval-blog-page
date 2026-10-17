@@ -28,9 +28,9 @@ The evaluation takes place in a mock apartment environment in our lab. The setup
 
 ### Observation, action, and control loop
 
-{% figure "/media/images/system-overview.png", "Overall Astra control loop.", "system-overview" %}
-
 {% figref "system-overview" %} shows the overall control loop. The system runs in a synchronous `observe -> inference –> execute` loop. In each turn, Astra receives observations, robot proprioception, and previous execution feedback, optionally access depth information through a provided API, and then outputs joint relative position command; the robot executes the command, and new observations and execution feedback are sent to Astra after execution finishes.
+
+{% figure "/media/images/system-overview.png", "Overall Astra control loop.", "system-overview" %}
 
 **Depth API.** We provide Astra an API that takes in a set of coordinates in wrist camera image space and return the corresponding depths in centimeters in wrist camera frame. During each turn, Astra decides whether or not to use the API, and if so, what coordinates to query.
 

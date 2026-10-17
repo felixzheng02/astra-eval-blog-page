@@ -30,9 +30,8 @@ nav: Weaknesses
 We found that Astra struggles with fine-grained manipulation in general, where by "fine-grained", we mean: ***. We think several reasons are likely: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
 
 {% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Open cabinet." %}
-{% video "/media/videos/clip-a.mp4", "Open the fridge." %}
-{% video "/media/videos/clip-a.mp4", "Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around." %}
+{% video "/media/videos/clip-a.mp4", "(yes) Make coffee" %}
+{% video "/media/videos/clip-a.mp4", "" %}
 {% endvideoGrid %}
 
 <!-- **What we saw.** Astra's plans were usually right, but steps that come down to millimeters and force often failed. In the coffee task, Astra **did not fully seat the pod in any of the first 6 episodes**. In one of those, the operator had to push the pod down by hand. Closing the Keurig lid **failed twice in a single episode**, and pressing the brew button took several small corrections before the gripper was aligned with it. Astra also **deformed a pod by squeezing too hard**, after which the pod could not be pushed into place. Other tasks showed the same pattern. The toy drill took **4–5 attempts** to pick up. While folding a hoodie, Astra closed the gripper when it was nowhere near the fabric and missed the hem several times.
@@ -89,7 +88,7 @@ Astra struggles to reason about dependencies across steps. It often fails to ant
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "Another example." %}
-{% video "/media/videos/clip-a.mp4", "Stack the bottled water on top of the cup. To keep the cup visible to the wrist camera while stacking the bottle, the robot must first grasp the bottle from the top. Astra consistently failed to anticipate this requirement, even when we included relevant hints in the system prompt." %}
+{% video "/media/videos/clip-a.mp4", "(no) Stack the bottled water on top of the cup. To keep the cup visible to the wrist camera while stacking the bottle, the robot must first grasp the bottle from the top. Astra consistently failed to anticipate this requirement, even when we included relevant hints in the system prompt." %}
 {% endvideoGrid %}
 
 <!-- ### Spatial reasoning -->

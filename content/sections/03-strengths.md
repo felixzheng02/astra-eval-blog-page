@@ -28,21 +28,18 @@ What stood out was not any single task Astra completed, but how much coherent ro
 
 Deployed zero-shot in a household environment, Astra can complete a diverse range of tasks, suggesting that a powerful VLM can transfer its knowledge to the physical world and generalize across robotic tasks.
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Pick an orange from the table and put it inside the basket on the counter." %}
-{% video "/media/videos/clip-b.mp4", "Open the cabinet." %}
-{% video "/media/videos/clip-c.mp4", "Fold a towel." %}
-{% video "/media/videos/clip-d.mp4", "Turn on the sink faucet." %}
-{% video "/media/videos/clip-e.mp4", "Make coffee (specific instruction)." %}
-{% video "/media/videos/clip-f.mp4", "Wipe surface with cloth." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "(no) Pick an orange from the table and put it inside the basket on the counter." %}
+{% video "/media/videos/clip-b.mp4", "(yes) jar opening" %}
+{% video "/media/videos/clip-c.mp4", "(yes) toast bagel" %}
+{% video "/media/videos/clip-d.mp4", "." %}
 {% endvideoGrid %}
 
 For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Pour water." %}
-{% video "/media/videos/clip-b.mp4", "Make coffee." %}
-{% video "/media/videos/clip-c.mp4", "Third clip." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "(yes) Pour ice." %}
+{% video "/media/videos/clip-b.mp4", "(yes) Turn on the sink faucet." %}
 {% endvideoGrid %}
 
 <!-- Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement. -->
@@ -65,10 +62,9 @@ Even though VLMs are known for strong semantic understanding and are widely used
 
 #### It actively gathers information it needs
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Find the mobile phone under the pillow on the sofa." %}
-{% video "/media/videos/clip-b.mp4", "Grab the apple from the kitchen and bring it to the couch." %}
-{% video "/media/videos/clip-c.mp4", "Move the arm when it obstructs the camera's view." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "(no) Find the mobile phone under the pillow on the sofa." %}
+{% video "/media/videos/clip-b.mp4", "(no) Grab the apple from the kitchen and bring it to the couch." %}
 {% endvideoGrid %}
 
 <!-- *"Find the mobile phone under the pillow on the sofa."*
@@ -89,10 +85,9 @@ While making coffee, Astra repeatedly **moved its own arm to see better**. On th
 
 #### It understands ambiguous task instructions
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Find me something to wipe the table." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "(no) Find me something to wipe the table." %}
 {% video "/media/videos/clip-a.mp4", "example 2." %}
-{% video "/media/videos/clip-a.mp4", "example 3." %}
 {% endvideoGrid %}
 
 <!-- *"Grab the apple from the kitchen and bring it to the couch."*
@@ -105,10 +100,9 @@ Astra grounds all three components of the instruction correctly: the target obje
 
 #### It plans over long horizons and replans when necessary
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Make coffee." %}
-{% video "/media/videos/clip-a.mp4", "Clean up the play area." %}
-{% video "/media/videos/clip-a.mp4", "One more example." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "" %}
+{% video "/media/videos/clip-a.mp4", "(no) Clean up the play area." %}
 {% endvideoGrid %}
 
 <!-- *"Grab the apple from the kitchen and bring it to the couch."*
@@ -158,10 +152,9 @@ In the toy clean-up task, the only instruction was *"Clean up the play area"*. A
 
 We found that Astra can adjust its whole-body pose by controlling the mobile base and arm together, enabling it to perform tasks that require coordinated movement.
 
-{% videoGrid 3 %}
-{% video "/media/videos/clip-a.mp4", "Open cabinet." %}
-{% video "/media/videos/clip-a.mp4", "Open the fridge." %}
-{% video "/media/videos/clip-a.mp4", "Design a case: the target location is initially unreachable by directly extending arm; desired behavior: Astra first tried fully extending arm -> move base directly towards it rejected by obstacle avoidance -> try to move around." %}
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "(yes) Open cabinet." %}
+{% video "/media/videos/clip-a.mp4", "(yes) Wipe table." %}
 {% endvideoGrid %}
 
 <!-- After we revised the action schema, Astra opened both cabinet doors under the sink. The task involves coordinating the base and arm as the door moves. We describe the axis and sign errors that motivated the change in the [action-interface case study](#debugging-the-action-interface).
@@ -188,6 +181,6 @@ We found that Astra can generate motion commands that closely follow detailed na
 When Astra encounters difficulty completing a task, it autonomously attempts alternative strategies. This works particularly well when the source of the difficulty lies within the current step. Its recovery is less effective when the problem stems from an earlier step; see [Fails to reason about dependencies across steps](#fails-to-reason-about-dependencies-across-steps).
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "Open the oven." %}
+{% video "/media/videos/clip-a.mp4", "" %}
 {% video "/media/videos/clip-a.mp4", "second example." %}
 {% endvideoGrid %}

@@ -23,6 +23,7 @@ npm run build   # writes _site/
 | A section's text | `content/sections/NN-name.md` |
 | Add a section | Copy [`content/sections/_template.md`](content/sections/_template.md) to `content/sections/06-name.md` |
 | Images | Drop files in `media/images/` |
+| Interactive Plotly figures | Copy the generated `.json` into `media/figures/` (see below) |
 | Videos | Drop compressed mp4s in `media/videos/` (see limits below) |
 
 Section files are concatenated **in filename order**. Keep the `NN-` prefix. The `nav:` field in front matter is the top-bar label and the fragment id.
@@ -40,6 +41,9 @@ Nunjucks runs **before** Markdown. Use the quotes-and-commas form:
 {% figure "/media/images/plot.png", "Figure caption" %}
 {% figure "/media/images/astra_control_loop.png", "Overall Astra control loop.", "control-loop" %}
 As shown in {% figref "control-loop" %}, the loop is synchronous.
+
+{% plotly "/media/figures/ablation-reasoning.json", "Caption.", "ablation-reasoning" %}
+As shown in {% figref "ablation-reasoning" %}, hover a trial for its outcome.
 
 {% videoGrid 2 %}
 {% video "/media/videos/left.mp4", "Left" %}
@@ -72,7 +76,26 @@ Object form also works: `{% video { src: "/media/videos/clip.mp4", caption: "Cap
 
 Grids accept `2`, `3`, or `4` columns (1 column on small screens).
 
-`{% figure %}` captions are numbered in page order (`Figure 1.`, `Figure 2.`, …). Pass a stable label as the third argument (or `label:` in object form) and cite it with `{% figref "that-label" %}` so the number stays correct if you reorder figures. With no label, the filename stem is the key (`plot.png` → `{% figref "plot" %}`). Do not hard-code “Figure 1” in the caption or the prose.
+`{% figure %}` and `{% plotly %}` captions are numbered in page order (`Figure 1.`, `Figure 2.`, …). Pass a stable label as the third argument (or `label:` in object form) and cite it with `{% figref "that-label" %}` so the number stays correct if you reorder figures. With no label, the filename stem is the key (`plot.png` → `{% figref "plot" %}`). Do not hard-code “Figure 1” in the caption or the prose.
+
+## Interactive Plotly figures
+
+Keep generation in `ablation_figure_generation/` (or any Plotly script). Copy only the JSON spec into this repo — not the standalone `.html`, which inlines Plotly and is several megabytes.
+
+```bash
+# after plot_plotly.py writes figures/<Ablation>/ablation_plotly.json
+mkdir -p media/figures
+cp ../ablation_figure_generation/figures/Reasoning/ablation_plotly.json \
+  media/figures/ablation-reasoning.json
+```
+
+Then embed it full-width (six-panel charts do not fit `{% figureGrid 2 %}`):
+
+```njk
+{% plotly "/media/figures/ablation-reasoning.json", "Caption.", "ablation-reasoning" %}
+```
+
+Optional PNG fallback: `{% plotly { src: "/media/figures/ablation-reasoning.json", fallback: "/media/figures/ablation-reasoning.png", caption: "Caption.", label: "ablation-reasoning" } %}`. Photos and diagrams still use `{% figure %}`.
 
 Markdown tables, lists, and headings work as usual:
 

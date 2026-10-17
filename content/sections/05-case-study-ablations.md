@@ -27,8 +27,9 @@ The following figures show ablation studies on different design choices. In each
 
 Metrics to show for each figure: success rate, completion rate, turns, inference time per turn, total execution time, token usage
 
+{% plotly "/media/figures/ablation-reasoning.json", "Success rate and completion rate generally increases when reasoning level increases from `none` to `high`, but saturates for `xhigh` and `max`.  Higher reasoning level consumes more inference time and token.", "ablation-reasoning" %}
+
 {% figureGrid 2 %}
-{% figure "/media/images/ablation-reasoning-level.png", "Success rate and completion rate generally increases when reasoning level increases from `none` to `high`, but saturates for `xhigh` and `max`.  Higher reasoning level consumes more inference time and token." %}
 {% figure "/media/images/ablation-embodiment.png", "Embodiment information on vs. off." %}
 {% figure "/media/images/ablation-depth.png", "Depth information on vs. off." %}
 {% figure "/media/images/ablation-chunking.png", "Camera views included." %}

@@ -166,8 +166,13 @@ html {
 .content figure.media-block,
 .publication-body figure.media-block,
 .media-block {
-  margin: 0;
+  margin: 1.15rem 0 1.85rem;
   min-width: 0;
+}
+
+.media-grid .media-block,
+.media-grid figure.media-block {
+  margin: 0;
 }
 
 .media-block video,
@@ -206,6 +211,36 @@ html {
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.media-block.plotly-block .plotly-frame {
+  width: 100%;
+  min-height: 20rem;
+  aspect-ratio: 1450 / 820;
+  background: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+
+.plotly-frame-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 20rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+@media screen and (max-width: 900px) {
+  .media-block.plotly-block {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .media-block.plotly-block .plotly-frame {
+    min-width: 52rem;
+  }
 }
 
 .media-block figcaption {

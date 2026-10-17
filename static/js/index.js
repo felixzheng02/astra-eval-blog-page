@@ -69,6 +69,82 @@ function setupVideoAutoplay() {
   videos.forEach((video) => observer.observe(video));
 }
 
+const PLOTLY_CDN =
+  "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@4.1.1/plotly.min.js";
+
+let plotlyLoader = null;
+
+function loadPlotly() {
+  if (window.Plotly) return Promise.resolve();
+  if (plotlyLoader) return plotlyLoader;
+  plotlyLoader = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = PLOTLY_CDN;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Plotly"));
+    document.head.appendChild(script);
+  });
+  return plotlyLoader;
+}
+
+function setPlotlyStatus(el, message) {
+  el.replaceChildren();
+  const status = document.createElement("span");
+  status.className = "plotly-frame-status";
+  status.textContent = message;
+  el.appendChild(status);
+}
+
+async function renderPlotlyFrame(el) {
+  const src = el.dataset.plotlySrc;
+  if (!src) return;
+  const response = await fetch(src);
+  if (!response.ok) {
+    throw new Error(`Figure JSON ${response.status} ${src}`);
+  }
+  const spec = await response.json();
+  const layout = { ...(spec.layout || {}), autosize: true };
+  delete layout.width;
+  delete layout.height;
+  const filename =
+    el.closest("[data-figure]")?.getAttribute("data-figure") || "figure";
+  el.replaceChildren();
+  const width = el.clientWidth || el.offsetWidth;
+  if (width) {
+    el.style.height = `${Math.max(Math.round(width * (820 / 1450)), 320)}px`;
+  }
+  await window.Plotly.newPlot(el, spec.data || [], layout, {
+    responsive: true,
+    displaylogo: false,
+    modeBarButtonsToRemove: ["lasso2d", "select2d"],
+    toImageButtonOptions: { format: "svg", filename },
+  });
+  window.Plotly.Plots.resize(el);
+}
+
+async function setupPlotlyFigures() {
+  const frames = document.querySelectorAll(".plotly-frame[data-plotly-src]");
+  if (!frames.length) return;
+  try {
+    await loadPlotly();
+  } catch (error) {
+    frames.forEach((el) => setPlotlyStatus(el, "Interactive figure failed to load."));
+    console.error(error);
+    return;
+  }
+  await Promise.all(
+    [...frames].map(async (el) => {
+      try {
+        await renderPlotlyFrame(el);
+      } catch (error) {
+        setPlotlyStatus(el, "Interactive figure failed to load.");
+        console.error(error);
+      }
+    })
+  );
+}
+
 function onReady(fn) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", fn);
@@ -80,6 +156,7 @@ function onReady(fn) {
 onReady(() => {
   setupNavbarBurger();
   setupVideoAutoplay();
+  setupPlotlyFigures();
 
   if (window.bulmaCarousel) {
     window.bulmaCarousel.attach(".carousel", {
