@@ -30,8 +30,8 @@ Deployed zero-shot in a household environment, Astra can complete a diverse rang
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "(no) Pick an orange from the table and put it inside the basket on the counter." %}
-{% video "/media/videos/clip-b.mp4", "(yes) jar opening" %}
-{% video "/media/videos/clip-c.mp4", "(yes) toast bagel" %}
+{% video "/media/videos/open-jar.mp4", "Instruction: `help me open the jar`. Astra recognized the user holding a jar, tried a few rotate then lift motions, and finally opened the cap." %}
+{% video "/media/videos/toast-bagel.mp4", "Instruction: `toast the bagel`. Astra put the bagel inside the toaster and then pushed the lever down to turn on the toaster." %}
 {% video "/media/videos/clip-d.mp4", "." %}
 {% endvideoGrid %}
 
@@ -39,7 +39,7 @@ For some tasks, while Astra may not consistently achieve full completion, it rel
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "(yes) Pour ice." %}
-{% video "/media/videos/clip-b.mp4", "(yes) Turn on the sink faucet." %}
+{% video "/media/videos/turn-on-faucet.mp4", "Instruction: `turn on the sink faucet`. After a few failed attempt due to slippery horizontal grasping, Astra changed strategy and grasped vertically and successfully turned on the faucet." %}
 {% endvideoGrid %}
 
 <!-- Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement. -->
@@ -153,8 +153,8 @@ In the toy clean-up task, the only instruction was *"Clean up the play area"*. A
 We found that Astra can adjust its whole-body pose by controlling the mobile base and arm together, enabling it to perform tasks that require coordinated movement.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(yes) Open cabinet." %}
-{% video "/media/videos/clip-a.mp4", "(yes) Wipe table." %}
+{% video "/media/videos/open-cabinet.mp4", "Instruction: `open the left door of the cabinet under the sink`. Note how Astra moved the base and swinged the wrist to the right simultaneously to open the door." %}
+{% video "/media/videos/clean-spilled-water.mp4", "Instruction: `upright the cup and clean up the mess`. Note how Astra wiped the water by moving the base left and right, repositioning the wrist holding the towel without moving the arm or wrist joints." %}
 {% endvideoGrid %}
 
 <!-- After we revised the action schema, Astra opened both cabinet doors under the sink. The task involves coordinating the base and arm as the door moves. We describe the axis and sign errors that motivated the change in the [action-interface case study](#debugging-the-action-interface).

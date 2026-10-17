@@ -23,11 +23,11 @@ nav: Weaknesses
 
 <!-- The failures we saw were not random. Most of them happened in the **same few situations**: the robot's own arm blocking its view, contact and force deciding the outcome, or Astra having nothing in its interface to report that something had gone wrong. Many of these situations are hard for **any** system that works from camera images alone, not just for Astra. Where we can, we describe what we saw, what we think is causing it, and what might help. The same caveat as before applies: these are counts from a handful of episodes, not measured failure rates. -->
 
-[intro/topic sentence]
+Although Astra demonstrated impressive capabilities, our experiments also revealed recurring limitations. Most of the failures we saw were not isolated or random; they tended to cluster around a consistent set of challenges in perception, manipulation, and reasoning. In the following sections, we group these failure modes by theme, describe the behaviors we observed, and discuss the factors that may have contributed to them.
 
 ### Fine-grained manipulation
 
-We found that Astra struggles with fine-grained manipulation in general, where by "fine-grained", we mean: ***. We think several reasons are likely: (1) fine-grained manipulation is inherently hard for robots with one parallel-jar gripper and no force feedback, (2) Astra apparently lack the "physical commonsense" (cite Andy Zeng) required for some tasks
+We found that Astra struggles with fine-grained manipulation: contact-rich actions in which millimeter-scale errors in pose or small differences in grip force can determine success. It has particular difficulty in confined spaces, where limited clearance makes it easy for the gripper or the object being manipulated to become wedged against the surroundings. Three factors appear to contribute. First, Stretch has no force feedback, so Astra must infer contact from images alone. Second, the wrist camera is often the only view that provides enough detail for precise manipulation, yet its view of the relevant contact point or surrounding clearance is frequently occluded by the gripper or the object itself. Third, Astra often fails to exhibit what Andy Zeng calls ["physical commonsense"](https://generalistai.com/blog/physical-commonsense): the reactive, closed-loop intuition for forces, friction, compliance, and uncertainty that supports small corrections during manipulation.
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "(yes) Make coffee" %}
@@ -133,11 +133,20 @@ Target localization is reliable when the object is within the camera's field of 
 
 **What might help.** Adding a separate failure or request-for-help response, and stating in the prompt what a finished task looks like. -->
 
-### Scene awareness
+### Scene awareness and collisions
 
-collisions, 
+Astra often lacked sufficient awareness of its surroundings and frequently collided with objects, particularly those that were not the immediate target or directly involved in the current step of the task.
+
+{% videoGrid 2 %}
+{% video "/media/videos/clip-a.mp4", "Clip of a collision" %}
+{% video "/media/videos/clip-a.mp4", "Clip of a collision" %}
+{% endvideoGrid %}
 
 ### Time and token cost
+
+{% comment "Felix" %}
+need to get the numbers
+{% endcomment %}
 
 Astra's inference is both time- and token-intensive. Across all tasks and episodes, each Codex turn takes an average of ** seconds and consumes ** tokens. This amounts to ** tokens per minute of execution, with inference accounting for **% of the total runtime.
 

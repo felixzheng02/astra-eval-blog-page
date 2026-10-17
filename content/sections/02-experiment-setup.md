@@ -17,22 +17,27 @@ nav: Experiment Setup
 
 ### Robot and environment
 
-
 We use a [Hello Robot Stretch 4](https://hello-robot.com/stretch-4/), a mobile manipulator with 9 degrees of freedom. It has a three-wheel omnidirectional base, a lift that moves the arm along a vertical spine, a horizontally telescoping arm, a three-axis wrist, and a parallel-jaw gripper. Stretch has an RGB-D camera on its wrist, three cameras on its head (a center camera plus two fish-eye cameras on the left and right), and other lidar/ground sensors that were excluded from our experiments. A computer onboard the Stretch handles the lower level control logic while a seperate workstation sends relative movement commands across a wireless network.
 
 The evaluation takes place in a mock apartment environment in our lab. The setup has a kitchen (counter, sink, toaster, fridge, a Keurig coffee maker, drawers, and cabinets), a dining table with chairs, a living area with a sofa, and a play area with toy bins next to a bedroom area with a dresser.
+
+{% comment "Felix" %}
+need to take a picture of environment and robot
+{% endcomment %}
+
+{% figure "/media/images/env-and-robot.svg", "Overall Astra control loop.", "env-and-robot" %}
 
 <!-- Setup photo: drop the file in media/images/, then move this line below the endraw so it renders.
 {% figure "/media/images/setup.jpg", "Stretch 4 in the household environment used for evaluation." %}
 -->
 
-### Observation, action, and control loop
+### System overview and control loop
 
-{% figref "system-overview" %} shows the overall control loop. The system runs in a synchronous `observe -> inference –> execute` loop. In each turn, Astra receives observations, robot proprioception, and previous execution feedback, optionally access depth information through a provided API, and then outputs joint relative position command; the robot executes the command, and new observations and execution feedback are sent to Astra after execution finishes.
+{% figref "astra-control-loop" %} shows the overall control loop. The system runs in a synchronous `observe -> inference –> execute` loop. In each turn, Astra receives observations, robot proprioception, and previous execution feedback, optionally access depth information through a provided API, and then outputs joint relative position command; the robot executes the command, and new observations and execution feedback are sent to Astra after execution finishes.
 
-{% figure "/media/images/system-overview.png", "Overall Astra control loop.", "system-overview" %}
+{% figure "/media/images/astra_control_loop.svg", "Overall Astra control loop.", "astra-control-loop" %}
 
-**Depth API.** We provide Astra an API that takes in a set of coordinates in wrist camera image space and return the corresponding depths in centimeters in wrist camera frame. During each turn, Astra decides whether or not to use the API, and if so, what coordinates to query.
+**Wrist depth API.** We provide Astra an API that takes in a set of coordinates in wrist camera image space and return the corresponding depths in centimeters in wrist camera frame. During each turn, Astra decides whether or not to use the API, and if so, what coordinates to query.
 
 **Output action.** During each turn, Astra is asked to output either `move`, together with each joint's relative position, or `done`, which indicates task completion. The complete action schema is provided in the appendix.
 
@@ -102,17 +107,7 @@ We access Astra (`gpt-6-astra`) through a Codex CLI instance. It retains no info
 
 For every task, we use a uniform system prompt that specifies the overall objective (controlling a Stretch 4 robot to complete the user's task) and outlines the control loop, including its inputs and the required JSON output format. The prompt also includes additional details that may be helpful, such as robot embodiment information and safety guidelines. At the end, the one-sentence task instruction is appended. Importantly, there is no task-specific information, hints, or human priors embedded in our prompt. See the appendix for the full prompt.
 
-**Configurations.** Unless otherwise noted, all results are reported using the default configuration outlined below. Alternative variants are evaluated in the ablation experiments described in [Case Study and Ablations](05-case-study-ablations.md#case-study--ablations).
-
-| Setting                 | Default                                             | Variants Tested                                 |
-|-------------------------|-----------------------------------------------------|-------------------------------------------------|
-| Reasoning effort        | high                                                | low, ultra                         |
-| Cameras                 | All cameras (head left + head center + head right + wrist) | head center + wrist |
-| Wrist depth             | API for Astra to query depths from image coordinates| Color-mapped depth image; no depth                        |
-| Proprioception          | On                                                  | Off                                               |
-| Execution feedback      | On                                                  | Off                                               |
-| Embodiment description  | On                                                  | Off                                             |
-| Task prompt             | Task instruction only                               | Task instruction with detailed motion guidance   |
+**Configurations.** Unless otherwise noted, all results are reported using the default configuration in {% tabref "ablation-settings" %}. Alternative variants are evaluated in [Case Study and Ablations](05-case-study-ablations.md#case-study--ablations).
 
 **Zero-shot claim.** We regard this configuration as genuinely zero-shot: there is no robot-specific training, fine-tuning, demonstrations, in-context examples, or hand-written skills such as a grasp planner, navigation stack, or object detector. The prompt remains identical for every task and contains no task-specific hints; only the task instruction changes, except in cases where we explicitly test prompt variations.
 
@@ -130,13 +125,9 @@ For every task, we use a uniform system prompt that specifies the overall object
 | "Clean up the play area." | Fine-grained manipulation, long-horizon |
 | "Fold my clothes." | Fine-grained manipulation, deformable objects, long-horizon | -->
 
-{% comment "Felix" %}
-Two options: (1) inspired by pi0 blog, we adopted "vibe checking"... (2) we chose tasks that evaluate the following axes... for a complete set of task, see appendix.
-{% endcomment %}
-
 Inspired by [Evaluating $\pi_0$ in the Wild](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/), we adopted a "vibe-checking" approach, improvising tasks rather than relying on a standard benchmark. For each task, we defined success criteria, measured relevant metrics, and documented failure modes. Full experiment logs are included in the appendix.
 
-**Trials.** Given the number of tasks and Astra’s relatively slow inference speed, unless otherwise specified, we performed 5 trials per task. We consider Astra to demonstrate reliable capability in a particular aspect, and include that task as an illustrative example in [Strengths](03-strengths.md#strengths), only if the relevant behavior is observed in at least 80% of trials.
+**Trials.** Given the number of tasks and Astra’s relatively slow inference speed, unless otherwise specified, we performed 5 trials per task. We consider Astra to demonstrate that a particular capability is not just the result of chance, and include that task as an illustrative example in [Strengths](03-strengths.md#strengths), only if the relevant behavior is observed in at least 2 out of 5 trials.
 
 **Metrics.** We measure metrics including completion rate, inference time, token usage, etc. for each rollout. We include full list of metrics and results in appendix.
 

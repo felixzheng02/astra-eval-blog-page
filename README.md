@@ -78,6 +78,20 @@ Grids accept `2`, `3`, or `4` columns (1 column on small screens).
 
 `{% figure %}` and `{% plotly %}` captions are numbered in page order (`Figure 1.`, `Figure 2.`, …). Pass a stable label as the third argument (or `label:` in object form) and cite it with `{% figref "that-label" %}` so the number stays correct if you reorder figures. With no label, the filename stem is the key (`plot.png` → `{% figref "plot" %}`). Do not hard-code “Figure 1” in the caption or the prose.
 
+Number a Markdown table the same way with `{% table %}` / `{% tabref %}`. Captions are `Table 1.`, `Table 2.`, … in page order, independent of figures:
+
+```njk
+{% table "Default configuration and ablation variants.", "ablation-settings" %}
+| Setting | Default | Variants Tested |
+| --- | --- | --- |
+| Reasoning effort | high | low, ultra |
+{% endtable %}
+
+As listed in {% tabref "ablation-settings" %}, …
+```
+
+Plain Markdown tables stay unnumbered. Do not hard-code “Table 1” in the caption or the prose.
+
 ## Interactive Plotly figures
 
 Keep generation in `ablation_figure_generation/` (or any Plotly script). Copy only the JSON spec into this repo — not the standalone `.html`, which inlines Plotly and is several megabytes.

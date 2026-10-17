@@ -218,6 +218,12 @@ function figureKey(opts, fallbackSrc = "") {
   return slugify(base);
 }
 
+function tableKey(opts) {
+  const raw = opts.label || opts.id || opts.caption;
+  if (raw == null || String(raw).trim() === "") return "";
+  return slugify(raw).replace(/^(tbl|table)-/, "");
+}
+
 function mediaFigure({
   inner,
   caption = "",
@@ -236,12 +242,12 @@ function mediaFigure({
   return `<figure ${attrs.join(" ")}>${inner}${cap}</figure>`;
 }
 
-function lookupFigure(numbers, raw) {
-  const key = slugify(raw).replace(/^fig-/, "");
+function lookupNumbered(numbers, raw, prefix) {
+  const key = slugify(raw).replace(new RegExp(`^${prefix}-`), "");
   return (
     numbers.get(key) ||
     numbers.get(String(raw || "")) ||
-    numbers.get(`fig-${key}`) ||
+    numbers.get(`${prefix}-${key}`) ||
     null
   );
 }
@@ -254,8 +260,10 @@ function numberFigures(html) {
   });
 
   const numbers = new Map();
+  const tableNumbers = new Map();
   const usedIds = new Set();
   let n = 0;
+  let tn = 0;
 
   output = output.replace(
     /<figure\b([^>]*)>([\s\S]*?)<\/figure>/gi,
@@ -297,11 +305,61 @@ function numberFigures(html) {
   output = output.replace(
     /<a\b([^>]*\bdata-figref="([^"]+)"[^>]*)>([\s\S]*?)<\/a>/gi,
     (full, attrs, ref) => {
-      const found = lookupFigure(numbers, ref);
+      const found = lookupNumbered(numbers, ref, "fig");
       const label = found ? `Figure&nbsp;${found.n}` : "Figure&nbsp;?";
       const hrefId = found?.id || `fig-${slugify(ref).replace(/^fig-/, "")}`;
       let nextAttrs = attrs.replace(/\s*\bhref="[^"]*"/i, "");
       if (!/\bclass=/.test(nextAttrs)) nextAttrs += ` class="figure-ref"`;
+      return `<a href="#${esc(hrefId)}"${nextAttrs}>${label}</a>`;
+    }
+  );
+
+  output = output.replace(
+    /<figure\b([^>]*)>([\s\S]*?)<\/figure>/gi,
+    (full, attrs, inner) => {
+      const keyMatch = /\bdata-table="([^"]*)"/.exec(attrs);
+      if (!keyMatch || /\bdata-table-number="/.test(attrs)) return full;
+
+      tn += 1;
+      const key = slugify(keyMatch[1]).replace(/^(tbl|table)-/, "") || `table-${tn}`;
+      const requestedId = /\bid="([^"]*)"/.exec(attrs)?.[1] || `tbl-${key}`;
+      let id = requestedId;
+      if (usedIds.has(id)) {
+        let i = 2;
+        while (usedIds.has(`${requestedId}-${i}`)) i += 1;
+        id = `${requestedId}-${i}`;
+      }
+      usedIds.add(id);
+
+      const record = { n: tn, id };
+      tableNumbers.set(key, record);
+      tableNumbers.set(id, record);
+      tableNumbers.set(id.replace(/^(tbl|table)-/, ""), record);
+
+      const nextAttrs = `${attrs
+        .replace(/\s*\bid="[^"]*"/i, "")
+        .replace(/\s*\bdata-table(?:="[^"]*")?/i, "")
+        .replace(/\s*\bdata-table-number="[^"]*"/i, "")} id="${esc(id)}" data-table="${esc(key)}" data-table-number="${tn}"`;
+
+      const label = `<span class="table-number">Table&nbsp;${tn}.</span>`;
+      const capMatch = inner.match(/<figcaption([^>]*)>([\s\S]*?)<\/figcaption>/i);
+      const capAttrs = capMatch?.[1] || "";
+      const capBody = (capMatch?.[2] || "").trim();
+      const figcaption = `<figcaption${capAttrs}>${label}${capBody ? ` ${capBody}` : ""}</figcaption>`;
+      const withoutCap = inner.replace(/<figcaption[\s\S]*?<\/figcaption>/i, "");
+      return `<figure${nextAttrs}>${figcaption}${withoutCap}</figure>`;
+    }
+  );
+
+  output = output.replace(
+    /<a\b([^>]*\bdata-tabref="([^"]+)"[^>]*)>([\s\S]*?)<\/a>/gi,
+    (full, attrs, ref) => {
+      const found = lookupNumbered(tableNumbers, ref, "tbl") ||
+        lookupNumbered(tableNumbers, ref, "table");
+      const label = found ? `Table&nbsp;${found.n}` : "Table&nbsp;?";
+      const hrefId = found?.id || `tbl-${slugify(ref).replace(/^(tbl|table)-/, "")}`;
+      let nextAttrs = attrs.replace(/\s*\bhref="[^"]*"/i, "");
+      if (!/\bclass=/.test(nextAttrs)) nextAttrs += ` class="table-ref"`;
       return `<a href="#${esc(hrefId)}"${nextAttrs}>${label}</a>`;
     }
   );
@@ -446,6 +504,30 @@ export default function (eleventyConfig) {
     const key = figureKey(opts);
     if (!key) return "";
     return `<a class="figure-ref" href="#fig-${esc(key)}" data-figref="${esc(key)}">Figure</a>`;
+  });
+
+  eleventyConfig.addPairedShortcode("table", (content, caption, label) => {
+    const opts = asOpts(caption, label, "caption", "label");
+    const key = tableKey(opts);
+    const inner = renderInnerMarkdown(content);
+    if (!inner) return "";
+    const attrs = [`class="table-block"`];
+    if (key) {
+      attrs.push(`id="tbl-${esc(key)}"`);
+      attrs.push(`data-table="${esc(key)}"`);
+    }
+    const cap =
+      opts.caption || key
+        ? `<figcaption>${renderCaption(opts.caption || "")}</figcaption>`
+        : "";
+    return `<figure ${attrs.join(" ")}>${cap}<div class="table-wrap">${inner}</div></figure>`;
+  });
+
+  eleventyConfig.addShortcode("tabref", (id) => {
+    const opts = asOpts(id, null, "id", "id");
+    const key = tableKey(opts);
+    if (!key) return "";
+    return `<a class="table-ref" href="#tbl-${esc(key)}" data-tabref="${esc(key)}">Table</a>`;
   });
 
   eleventyConfig.addPairedShortcode("videoGrid", (content, columns = 2) => {

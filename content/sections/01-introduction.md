@@ -15,8 +15,13 @@ Visible comment on the page.
 -->
 {% endraw %}
 
-{% comment "10/14 meeting" %}
-put an eye-catching video on the top
+{% comment "Felix" %}
+TODOs:
+
+- eye-catching video: plan to concatenate lots of robot execution clips and show it when people enters the webpage; scroll down to the blog.
+- more citations in intro part; also make citation format formal
+- more tasks & videos
+
 {% endcomment %}
 
 
