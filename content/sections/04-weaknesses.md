@@ -91,7 +91,7 @@ Astra struggles to reason about dependencies across steps. It often fails to ant
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "Another example." %}
-{% video "/media/videos/clip-a.mp4", "(yes) Stack the bottled water on top of the cup. To keep the cup visible to the wrist camera while stacking the bottle, the robot must first grasp the bottle from the top. Astra consistently failed to anticipate this requirement, even when we included relevant hints in the system prompt." %}
+{% video "/media/videos/stack-bottle-on-cup.mp4", "(yes) Stack the bottled water on top of the cup. To keep the cup visible to the wrist camera while stacking the bottle, the robot must first grasp the bottle from the top. Astra consistently failed to anticipate this requirement, even when we included relevant hints in the system prompt." %}
 {% endvideoGrid %}
 
 <!-- ### Spatial reasoning -->
@@ -141,7 +141,7 @@ Target localization is reliable when the object is within the camera's field of 
 Astra often lacked sufficient awareness of its surroundings and spatial context during task execution. As a result, it frequently made unintended contact with objects in the environment, especially those that were not the current target or directly involved in the immediate step. These collisions included bumping into nearby furniture, appliances, or other obstacles that were outside its main focus of attention. Sometimes operator interventions are required to prevent damage.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "Clip of a collision" %}
+{% video "/media/videos/open-fridge-collision.mp4", "Clip of a collision" %}
 {% video "/media/videos/clip-a.mp4", "Clip of a collision" %}
 {% endvideoGrid %}
 

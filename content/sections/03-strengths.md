@@ -31,14 +31,14 @@ Deployed zero-shot in a household environment, Astra can complete a diverse rang
 {% video "/media/videos/clip-a.mp4", "(no) " %}
 {% video "/media/videos/open-jar.mp4", "Instruction: `help me open the jar`. Astra recognized the user holding a jar, tried a few rotate then lift motions, and finally opened the cap." %}
 {% video "/media/videos/toast-bagel.mp4", "Instruction: `toast the bagel`. Astra put the bagel inside the toaster and then pushed the lever down to turn on the toaster." %}
-{% video "/media/videos/clip-d.mp4", "(no) take out an object from the drawer" %}
+{% video "/media/videos/turn-on-faucet.mp4", "Instruction: `turn on the sink faucet`." %}
 {% endvideoGrid %}
 
 For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "(yes) Pour ice." %}
-{% video "/media/videos/turn-on-faucet.mp4", "Instruction: `turn on the sink faucet`. After a few failed attempt due to slippery horizontal grasping, Astra changed strategy, grasped vertically, and successfully turned on the faucet." %}
+{% video "/media/videos/clip-a.mp4", "(no) " %}
 {% endvideoGrid %}
 
 <!-- Across several tasks, Astra selected motions that matched the intended goal, even when their execution was imprecise. This was clearest in actions such as tilting a cup to pour or turning it upside down for dishwasher placement. -->
@@ -63,7 +63,7 @@ Even though VLMs are known for strong semantic understanding and are widely used
 
 {% videoGrid 2 %}
 {% video "/media/videos/clip-a.mp4", "(no) I can't find tv remote." %}
-{% video "/media/videos/clip-b.mp4", "(yes) Instruction: `put an apple on the nightstand`." %}
+{% video "/media/videos/put-apple-on-nightstand.mp4", "(yes) Instruction: `put an apple on the nightstand`." %}
 {% endvideoGrid %}
 
 <!-- *"Find the mobile phone under the pillow on the sofa."*
@@ -100,8 +100,8 @@ Astra grounds all three components of the instruction correctly: the target obje
 #### It plans over long horizons and replans when necessary
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(no) put the spatula in the drawer, human close & open drawer" %}
-{% video "/media/videos/clip-a.mp4", "(yes) Clean up the play area." %}
+{% video "/media/videos/put-ball-in-drawer-replan.mp4", "Instruction: `put the ball in the drawer`." %}
+{% video "/media/videos/clean-up-play-area.mp4", "(yes) Clean up the play area." %}
 {% endvideoGrid %}
 
 <!-- *"Grab the apple from the kitchen and bring it to the couch."*
@@ -169,8 +169,8 @@ In the toy clean-up task, action chunking changed how the robot moved. With a 4/
 We found that Astra can generate motion commands that closely follow detailed natural-language instructions specifying exactly how the robot should move, such as precise arm positioning, gripper orientation, or base adjustments.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(yes) Instruction: `Open the dishwasher door.`." %}
-{% video "/media/videos/clip-a.mp4", "(yes) Instruction: `Open the dishwasher door. First, grasp the handle from above, positioning one finger between the handle and the door. Slowly retract the arm while lowering the lift, continuously adjusting the wrist orientation to keep the finger aligned with the door and prevent it from getting wedged between the handle and the door. Once the dishwasher door is halfway open, carefully release the gripper and retract the arm without colliding with the door. Then, move to the left side of the dishwasher and finish opening the door by pushing against its inner surface.`" %}
+{% video "/media/videos/open-dishwasher-nonsteered.mp4", "(yes) Instruction: `Open the dishwasher door.`." %}
+{% video "/media/videos/open-dishwasher-steered.mp4", "(yes) Instruction: `Open the dishwasher door. First, grasp the handle from above, positioning one finger between the handle and the door. Slowly retract the arm while lowering the lift, continuously adjusting the wrist orientation to keep the finger aligned with the door and prevent it from getting wedged between the handle and the door. Once the dishwasher door is halfway open, carefully release the gripper and retract the arm without colliding with the door. Then, move to the left side of the dishwasher and finish opening the door by pushing against its inner surface.`" %}
 {% endvideoGrid %}
 
 <!-- In one dishwasher trial, we instructed Astra to move the base rather than keep extending the arm toward the target. It changed its behavior and used the base, providing an example of how a concrete movement instruction can influence action selection. -->
@@ -180,6 +180,6 @@ We found that Astra can generate motion commands that closely follow detailed na
 When Astra encounters difficulty completing a task, it autonomously attempts alternative strategies. This works particularly well when the source of the difficulty lies within the current step. Its recovery is less effective when the problem stems from an earlier step; see [Fails to reason about dependencies across steps](#fails-to-reason-about-dependencies-across-steps).
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(yes) Close dishwasher." %}
-{% video "/media/videos/clip-a.mp4", "(no) open sink faucet" %}
+{% video "/media/videos/close-dishwasher.mp4", "(yes) Close dishwasher." %}
+{% video "/media/videos/turn-on-faucet-different-ways.mp4", "Instruction: `turn on the sink faucet`. After a few failed attempt due to slippery horizontal grasping, Astra changed strategy, grasped vertically, and successfully turned on the faucet." %}
 {% endvideoGrid %}
