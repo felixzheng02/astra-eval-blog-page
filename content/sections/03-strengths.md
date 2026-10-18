@@ -28,7 +28,7 @@ What stood out was not any single task Astra completed, but how much coherent ro
 Deployed zero-shot in a household environment, Astra can complete a diverse range of tasks, suggesting that a powerful VLM can transfer its knowledge to the physical world and generalize across robotic tasks.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(no) " %}
+{% video "/media/videos/grab-napkin.mp4", "(no) " %}
 {% video "/media/videos/open-jar.mp4", "Instruction: `help me open the jar`. Astra recognized the user holding a jar, tried a few rotate then lift motions, and finally opened the cap." %}
 {% video "/media/videos/toast-bagel.mp4", "Instruction: `toast the bagel`. Astra put the bagel inside the toaster and then pushed the lever down to turn on the toaster." %}
 {% video "/media/videos/turn-on-faucet.mp4", "Instruction: `turn on the sink faucet`." %}
@@ -37,7 +37,7 @@ Deployed zero-shot in a household environment, Astra can complete a diverse rang
 For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
 
 {% videoGrid 2 %}
-{% video "/media/videos/clip-a.mp4", "(yes) Pour ice." %}
+{% video "/media/videos/pour-ice.mp4", "(yes) Pour ice." %}
 {% video "/media/videos/clip-a.mp4", "(no) " %}
 {% endvideoGrid %}
 
