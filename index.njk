@@ -15,16 +15,5 @@ permalink: /
   </div>
 </section>
 {% for section in collections.sections %}
-{% set sectionId = section | fallbackSectionId %}
-<section class="section"{% if sectionId %} id="{{ sectionId }}"{% endif %}>
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-full">
-        <div class="content publication-body">
-          {{ section.templateContent | safe }}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+{% include "section.njk" %}
 {% endfor %}

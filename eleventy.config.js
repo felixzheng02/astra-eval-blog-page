@@ -73,6 +73,15 @@ function stripTags(html) {
   );
 }
 
+function readTemplateContent(section) {
+  try {
+    return section?.templateContent ?? "";
+  } catch (error) {
+    if (error?.name === "TemplateContentPrematureUseError") return "";
+    throw error;
+  }
+}
+
 function headingOutline(html) {
   const headings = [];
   const re = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
@@ -125,7 +134,7 @@ function renderToc(items) {
 function sectionsTableOfContents(sections = []) {
   const headings = [];
   for (const section of sections) {
-    const extracted = headingOutline(section.templateContent).filter(
+    const extracted = headingOutline(readTemplateContent(section)).filter(
       (heading) => heading.level <= 3
     );
     if (extracted.length) {
@@ -146,12 +155,12 @@ function sectionsTableOfContents(sections = []) {
 }
 
 function fallbackSectionId(section) {
-  if (headingOutline(section?.templateContent).length) return "";
+  if (headingOutline(readTemplateContent(section)).length) return "";
   return slugify(section?.data?.nav);
 }
 
 function sectionSubheadings(section) {
-  return headingOutline(section?.templateContent).filter(
+  return headingOutline(readTemplateContent(section)).filter(
     (heading) => heading.level === 3 && heading.id && heading.title
   );
 }
@@ -386,6 +395,7 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("content/sections/_template.md");
 
   eleventyConfig.addFilter("slug", slugify);
+  eleventyConfig.addFilter("templateContent", readTemplateContent);
   eleventyConfig.addFilter("authorNames", (authors = []) =>
     authors.map((author) => author.name).filter(Boolean).join(", ")
   );
