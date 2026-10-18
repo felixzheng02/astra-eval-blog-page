@@ -24,6 +24,12 @@ TODOs:
 
 {% endcomment %}
 
+{% comment "Nima" %}
+Change to: "The broader knowledge and reasoning"
+Change to: "have motivated recent trends of leveraging" or "the growing efforts"
+Change to: "controllers and then execute." or "plans of different, sequenced controllers."
+Change to: "off-the-shelf, general-purpose"
+{% endcomment %}
 
 The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 
 One direction trains vision-language-action (VLA) models on robot data to predict actions directly, which requires substantial data. 

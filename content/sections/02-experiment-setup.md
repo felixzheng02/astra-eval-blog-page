@@ -41,6 +41,12 @@ need to take a picture of environment and robot
 
 **Output action.** During each turn, Astra is asked to output either `move`, together with each joint's relative position, or `done`, which indicates task completion. The complete action schema is provided in the appendix.
 
+{% comment "Nima" %}
+Be sure to link the appendix above "The complete action schema is provided in the appendix (currently it is commented out)."
+
+Change: For 1-3 replace the semicolons with periods.
+{% endcomment %}
+
 **Execution feedback.** There are 4 types of execution feedback for each joint:
 1. `completed`: target joint position reached;
 2. `stopped_short`: joint stops moving, but target joint position not reached;
@@ -48,7 +54,6 @@ need to take a picture of environment and robot
 4. `rejected`: target joint position out of limit.
 
 <!-- At each decision step, Astra receives one text message and a set of images:
->>>>>>> 4d6262101cdd92998905cc3a3f65723cf948baa8
 At each decision step, Astra receives one **text** message describing the prompt, robot state, and previous action results and a set of **images**. The agent also has access to the context of the conversation:
 - **Prompt.** A human written one or two sentence prompt often asking for help with a household task.
 - **Images.** A wrist camera (800×500) and the head-center camera (1280×800).

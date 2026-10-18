@@ -62,6 +62,11 @@ We evaluated three configurations for providing wrist depth information: (1) no 
 
 - Omitting depth information resulted in similar overall performance but required more Codex turns, greater total time, and increased token usage. Without access to depth data, Astra had to estimate distances from RGB images alone, which led to wasted turns, time, and tokens on empty reaching and grasping. However, Astra consistently retried and recovered from these failures, resulting in comparable success and completion rates overall.
 
+{% comment "Nima" %}
+Suggestion: "performance. Missed grasp and retries were as common as when no depth information was provided, so the duration of the task completion also suffered. We "
+Suggestion: "depth value, leading to useless or confusing inputs into the model. As a result"
+{% endcomment %}
+
 - Providing a color-mapped depth image produced the weakest performance. We suspect this is because the colorized depth image is not perfectly aligned with the RGB image, unlike the API option where each pixel directly corresponds to a depth value. As a result, the additional information was not only unhelpful but may have distracted Astra and degraded its effectiveness.
 
 {% plotly "/media/figures/ablation-depth.json", "Effect of depth information.", "ablation-depth" %}

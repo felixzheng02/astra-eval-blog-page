@@ -21,7 +21,9 @@ The behaviors below come from a small number of episodes (for example, 7 for mak
 {% endcallout %} -->
 
 <!-- ### Correct motion intention -->
-
+{% comment "Nima" %}
+suggestion: "into a coordinated sequence of physical actions"
+{% endcomment %}
 What stood out was not any single task Astra completed, but how much coherent robotic behavior emerged from using a general-purpose VLM zero-shot. Across unfamiliar household tasks, it could often infer what to do, translate that intent into coordinated physical actions, and adapt when its first attempt fell short.
 
 ### Zero-shot generalization over diverse tasks
