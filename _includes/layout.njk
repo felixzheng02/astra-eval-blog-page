@@ -56,7 +56,19 @@
       <div id="writeupNavMenu" class="navbar-menu">
         <div class="navbar-end">
           {% for section in collections.sections %}
+          {% set subs = section | sectionSubheadings %}
+          {% if subs | length %}
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#{{ section.data.nav | slug }}" aria-haspopup="true">{{ section.data.nav }}</a>
+            <div class="navbar-dropdown" role="menu">
+              {% for sub in subs %}
+              <a class="navbar-item" href="#{{ sub.id }}" role="menuitem">{{ sub.title }}</a>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
           <a class="navbar-item" href="#{{ section.data.nav | slug }}">{{ section.data.nav }}</a>
+          {% endif %}
           {% endfor %}
           {% if site.bibtex %}
           <a class="navbar-item" href="#citation">Citation</a>

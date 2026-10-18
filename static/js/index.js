@@ -46,6 +46,16 @@ function setupNavbarBurger() {
       if (target) target.classList.toggle("is-active");
     });
   });
+
+  document.querySelectorAll("#writeupNavMenu a[href^='#']").forEach((link) => {
+    link.addEventListener("click", () => {
+      burgers.forEach((el) => {
+        el.classList.remove("is-active");
+        const target = document.getElementById(el.dataset.target);
+        if (target) target.classList.remove("is-active");
+      });
+    });
+  });
 }
 
 function setupVideoAutoplay() {
@@ -145,6 +155,162 @@ async function setupPlotlyFigures() {
   );
 }
 
+function setupFigureZoom() {
+  const triggers = document.querySelectorAll(
+    ".media-block:not(.plotly-block) .figure-zoom-trigger"
+  );
+  if (!triggers.length) return;
+
+  const root = document.createElement("div");
+  root.className = "figure-lightbox";
+  root.hidden = true;
+  root.setAttribute("role", "dialog");
+  root.setAttribute("aria-modal", "true");
+  root.setAttribute("aria-label", "Enlarged figure");
+  root.innerHTML = `
+    <button type="button" class="figure-lightbox-close" aria-label="Close enlarged figure">
+      <i class="fas fa-times" aria-hidden="true"></i>
+    </button>
+    <div class="figure-lightbox-stage">
+      <img alt="">
+    </div>
+    <p class="figure-lightbox-caption"></p>
+  `;
+  document.body.appendChild(root);
+
+  const stage = root.querySelector(".figure-lightbox-stage");
+  const img = root.querySelector("img");
+  const caption = root.querySelector(".figure-lightbox-caption");
+  const closeBtn = root.querySelector(".figure-lightbox-close");
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 8;
+  let scale = 1;
+  let tx = 0;
+  let ty = 0;
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  let lastFocus = null;
+
+  function applyTransform() {
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    img.classList.toggle("is-zoomed", scale > 1.01);
+  }
+
+  function resetView() {
+    scale = 1;
+    tx = 0;
+    ty = 0;
+    dragging = false;
+    applyTransform();
+  }
+
+  function clampScale(value) {
+    return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
+  }
+
+  function zoomAt(clientX, clientY, nextScale) {
+    const next = clampScale(nextScale);
+    if (next === scale) return;
+    const rect = stage.getBoundingClientRect();
+    const cx = clientX - rect.left - rect.width / 2;
+    const cy = clientY - rect.top - rect.height / 2;
+    const ratio = next / scale;
+    tx = cx - (cx - tx) * ratio;
+    ty = cy - (cy - ty) * ratio;
+    scale = next;
+    if (scale === MIN_SCALE) {
+      tx = 0;
+      ty = 0;
+    }
+    applyTransform();
+  }
+
+  function openFrom(trigger) {
+    const source = trigger.querySelector("img");
+    if (!source) return;
+    const figure = trigger.closest("figure");
+    lastFocus = trigger;
+    img.src = source.currentSrc || source.src;
+    img.alt = source.alt || "";
+    caption.textContent =
+      figure?.querySelector("figcaption")?.textContent.trim() || source.alt || "";
+    resetView();
+    root.hidden = false;
+    document.body.classList.add("figure-lightbox-open");
+    closeBtn.focus();
+  }
+
+  function close() {
+    if (root.hidden) return;
+    root.hidden = true;
+    document.body.classList.remove("figure-lightbox-open");
+    img.removeAttribute("src");
+    resetView();
+    lastFocus?.focus();
+  }
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => openFrom(trigger));
+  });
+
+  closeBtn.addEventListener("click", close);
+
+  root.addEventListener("click", (event) => {
+    if (event.target === root || event.target === stage) close();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") close();
+  });
+
+  stage.addEventListener(
+    "wheel",
+    (event) => {
+      if (root.hidden) return;
+      event.preventDefault();
+      const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+      zoomAt(event.clientX, event.clientY, scale * factor);
+    },
+    { passive: false }
+  );
+
+  img.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    if (scale > 1.01) {
+      resetView();
+    } else {
+      zoomAt(event.clientX, event.clientY, 2.5);
+    }
+  });
+
+  img.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || scale <= 1.01) return;
+    dragging = true;
+    lastX = event.clientX;
+    lastY = event.clientY;
+    img.setPointerCapture(event.pointerId);
+  });
+
+  img.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    const dx = event.clientX - lastX;
+    const dy = event.clientY - lastY;
+    tx += dx;
+    ty += dy;
+    lastX = event.clientX;
+    lastY = event.clientY;
+    applyTransform();
+  });
+
+  const stopDrag = () => {
+    dragging = false;
+  };
+  img.addEventListener("pointerup", stopDrag);
+  img.addEventListener("pointercancel", stopDrag);
+  img.addEventListener("dragstart", (event) => event.preventDefault());
+}
+
 function onReady(fn) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", fn);
@@ -156,6 +322,7 @@ function onReady(fn) {
 onReady(() => {
   setupNavbarBurger();
   setupVideoAutoplay();
+  setupFigureZoom();
   setupPlotlyFigures();
 
   if (window.bulmaCarousel) {

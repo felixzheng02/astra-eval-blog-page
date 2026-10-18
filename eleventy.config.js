@@ -150,6 +150,12 @@ function fallbackSectionId(section) {
   return slugify(section?.data?.nav);
 }
 
+function sectionSubheadings(section) {
+  return headingOutline(section?.templateContent).filter(
+    (heading) => heading.level === 3 && heading.id && heading.title
+  );
+}
+
 function esc(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -347,7 +353,7 @@ function numberFigures(html) {
       const capBody = (capMatch?.[2] || "").trim();
       const figcaption = `<figcaption${capAttrs}>${label}${capBody ? ` ${capBody}` : ""}</figcaption>`;
       const withoutCap = inner.replace(/<figcaption[\s\S]*?<\/figcaption>/i, "");
-      return `<figure${nextAttrs}>${figcaption}${withoutCap}</figure>`;
+      return `<figure${nextAttrs}>${withoutCap}${figcaption}</figure>`;
     }
   );
 
@@ -386,6 +392,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("headingOutline", headingOutline);
   eleventyConfig.addFilter("tableOfContents", sectionsTableOfContents);
   eleventyConfig.addFilter("fallbackSectionId", fallbackSectionId);
+  eleventyConfig.addFilter("sectionSubheadings", sectionSubheadings);
 
   eleventyConfig.addCollection("sections", (api) =>
     api
@@ -477,7 +484,7 @@ export default function (eleventyConfig) {
     const alt = esc(opts.alt || String(opts.caption || "").replace(/`([^`]+)`/g, "$1"));
     const width = opts.width ? ` style="max-width:${esc(opts.width)};margin-inline:auto"` : "";
     return mediaFigure({
-      inner: `<img src="${esc(localUrl(opts.src))}" alt="${alt}"${width}>`,
+      inner: `<button type="button" class="figure-zoom-trigger" aria-label="Enlarge figure"${width}><img src="${esc(localUrl(opts.src))}" alt="${alt}"></button>`,
       caption: opts.caption || "",
       numberedKey: figureKey(opts, opts.src),
     });
@@ -520,7 +527,7 @@ export default function (eleventyConfig) {
       opts.caption || key
         ? `<figcaption>${renderCaption(opts.caption || "")}</figcaption>`
         : "";
-    return `<figure ${attrs.join(" ")}>${cap}<div class="table-wrap">${inner}</div></figure>`;
+    return `<figure ${attrs.join(" ")}><div class="table-wrap">${inner}</div>${cap}</figure>`;
   });
 
   eleventyConfig.addShortcode("tabref", (id) => {
