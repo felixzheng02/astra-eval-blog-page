@@ -2,18 +2,6 @@
 layout: layout.njk
 permalink: /
 ---
-<section class="section toc-section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-full">
-        <nav class="toc" id="contents" aria-label="Table of contents">
-          <h2 class="title is-3 has-text-centered">Contents</h2>
-          {{ collections.sections | tableOfContents | safe }}
-        </nav>
-      </div>
-    </div>
-  </div>
-</section>
 {% for section in collections.sections %}
 {% include "section.njk" %}
 {% endfor %}

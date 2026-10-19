@@ -98,62 +98,6 @@ function headingOutline(html) {
   return headings;
 }
 
-function nestHeadings(headings) {
-  const root = [];
-  const stack = [];
-  for (const heading of headings) {
-    const node = { ...heading, children: [] };
-    while (stack.length && stack[stack.length - 1].level >= node.level) {
-      stack.pop();
-    }
-    if (stack.length === 0) {
-      root.push(node);
-    } else {
-      stack[stack.length - 1].children.push(node);
-    }
-    stack.push(node);
-  }
-  return root;
-}
-
-function renderToc(items) {
-  if (!items.length) return "";
-  let html = `<ol class="toc-list">`;
-  for (const item of items) {
-    const number = item.number
-      ? `<span class="heading-number">${esc(item.number)}</span> `
-      : "";
-    html += `<li><a href="#${esc(item.id)}">${number}${esc(item.title)}</a>`;
-    if (item.children.length) html += renderToc(item.children);
-    html += `</li>`;
-  }
-  html += `</ol>`;
-  return html;
-}
-
-function sectionsTableOfContents(sections = []) {
-  const headings = [];
-  for (const section of sections) {
-    const extracted = headingOutline(readTemplateContent(section)).filter(
-      (heading) => heading.level <= 3
-    );
-    if (extracted.length) {
-      headings.push(...extracted);
-      continue;
-    }
-    const title = section.data?.nav || "";
-    if (!title) continue;
-    const number = sectionNumberFromPath(section.inputPath);
-    headings.push({
-      level: 2,
-      id: slugify(title),
-      number: number ? String(number) : "",
-      title,
-    });
-  }
-  return renderToc(nestHeadings(headings));
-}
-
 function fallbackSectionId(section) {
   if (headingOutline(readTemplateContent(section)).length) return "";
   return slugify(section?.data?.nav);
@@ -400,7 +344,6 @@ export default function (eleventyConfig) {
     authors.map((author) => author.name).filter(Boolean).join(", ")
   );
   eleventyConfig.addFilter("headingOutline", headingOutline);
-  eleventyConfig.addFilter("tableOfContents", sectionsTableOfContents);
   eleventyConfig.addFilter("fallbackSectionId", fallbackSectionId);
   eleventyConfig.addFilter("sectionSubheadings", sectionSubheadings);
 
