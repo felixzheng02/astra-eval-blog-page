@@ -20,7 +20,6 @@ TODOs:
 
 - eye-catching video: plan to concatenate lots of robot execution clips and show it when people enters the webpage; scroll down to the blog.
 - more citations in intro part; also make citation format formal
-
 {% endcomment %}
 
 <!-- The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 
@@ -37,12 +36,8 @@ In September 2026, OpenAI released GPT-6 Astra ([OpenAI, 2026](https://openai.co
 
 Unlike established VLA- and VLM-based approaches, which rely on large-scale robot training data or hand-engineered interfaces, Astra issues actions directly from observations, with the action representation, horizon, and context specified in the prompt at inference time. 
 VLA models such as RT-2 ([Brohan et al., 2023](https://arxiv.org/abs/2307.15818)), OpenVLA ([Kim et al., 2025](https://arxiv.org/abs/2406.09246)), and π0 ([Black et al., 2024](https://arxiv.org/abs/2410.24164)) fine-tune a pretrained backbone on robot demonstrations, fixing the action space and horizon at training time. 
-VLM-based planners ([Ahn et al., 2022](https://arxiv.org/abs/2204.01691); [Driess et al., 2023](https://arxiv.org/abs/2303.03378)) select among predefined skills, which limits the robot to behaviors someone has already engineered, and Code as Policies ([Liang et al., 2023](https://arxiv.org/abs/2209.07753); [Fu et al., 2026](https://arxiv.org/abs/2603.22435v2)) writes control programs that can call only hand-designed perception and control APIs. 
-Astra thus combines the direct control of VLAs with the zero-shot generality of prompted models. 
-{% comment "Felix" %}
-I think this sentence doesn't motivate our work; it also summarizes other people's results (also part of our results); I prefer something like "its reliability under real-world mobile manipulation settings is untested"
-{% endcomment %}
+VLM-based planners ([Ahn et al., 2022](https://arxiv.org/abs/2204.01691); [Driess et al., 2023](https://arxiv.org/abs/2303.03378); [Chen et al., 2026](https://arxiv.org/abs/2606.07723)) typically decompose tasks into subgoals executed by predefined skills or learned policies, enabling flexible task composition while remaining constrained by the capabilities of the underlying controllers. 
+Code as Policies ([Liang et al., 2023](https://arxiv.org/abs/2209.07753); [Fu et al., 2026](https://arxiv.org/abs/2603.22435v2)) generate executable programs that combine control logic with calls to perception and control APIs, but reliable execution can depend heavily on the human-designed abstractions provided by these interfaces. 
+Astra thus combines the direct control of VLAs with the zero-shot generality of prompted models, but its reliability under real-world mobile manipulation settings is untested.
 
-Its reliability, however, varies widely across tasks: it handles simple pick-and-place well but struggles with precise, contact-rich manipulation [cite], and it is slow and expensive to query at control rates.
-
-In this work, we evaluate Astra’s zero-shot performance on 24 household tasks using the Hello Robot Stretch 4 mobile manipulator, prompting the model to output relative joint and base movements directly. Through task evaluations, case studies, and ablations, we characterize the capabilities and limitations of this approach and examine how design choices shape its control performance.
+In this work, we evaluate Astra’s zero-shot performance on **24 household tasks** using the Hello Robot Stretch 4 mobile manipulator, prompting the model to output relative joint and base movements directly. Through task evaluations, case studies, and ablations, we characterize the capabilities and limitations of this approach and examine how design choices shape its control performance.
