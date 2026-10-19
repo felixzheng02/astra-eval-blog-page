@@ -19,7 +19,6 @@ Visible comment on the page.
 TODOs:
 
 - eye-catching video: plan to concatenate lots of robot execution clips and show it when people enters the webpage; scroll down to the blog.
-- more citations in intro part; also make citation format formal
 {% endcomment %}
 
 <!-- The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 

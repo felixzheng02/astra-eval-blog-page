@@ -33,22 +33,13 @@ need to take a picture of environment and robot
 
 ### System overview and control loop
 
-{% figref "astra-control-loop" %} illustrates the main control loop. The system operates in a synchronous `observe → inference → execute` loop. At each turn, Astra receives sensory observations, robot proprioception, and previous execution feedback. It may also choose to access wrist depth information via a provided API. Astra then outputs joint-relative position commands, which the robot executes. After execution, updated observations and execution feedback are provided to Astra, and the loop continues.
+{% figref "astra-control-loop" %} illustrates the main control loop. The system operates in a synchronous `observe → reason & command → execute` loop. At each turn, Astra receives sensory observations, robot joint states, and previous execution feedback. It may also choose to access wrist depth information via a provided API. Astra then outputs joint relative position commands, which the robot executes. After execution, updated observations and execution feedback are provided to Astra, and the loop continues.
 
 {% figure "/media/images/astra_control_loop.svg", "Overall Astra control loop.", "astra-control-loop" %}
 
 **Wrist depth API.** We provide Astra an API that takes in a set of coordinates in wrist camera image space and returns the corresponding depths in centimeters in wrist camera frame. During each turn, Astra decides whether or not to use the API, and if so, what coordinates to query.
 
-**Output action.** During each turn, Astra is asked to output either `move`, together with each joint's relative position, or `done`, which indicates task completion. The complete action schema is provided in the appendix.
-
-{% comment "Nima" %}
-Be sure to link the appendix above "The complete action schema is provided in the appendix (currently it is commented out)."
-{% endcomment %}
-
-
-{% comment "Ankit" %}
-For "timeout" point under execution feedback might be helpful to state what the timeout value is instead of saying: within a certain timeout limit
-{% endcomment %}
+**Model output.** During each turn, Astra is asked to either output each joint's relative position command or decide to finish the task. The complete action schema is provided in the appendix.
 
 **Execution feedback.** Each joint can return one of four types of execution feedback:
 1. `completed`: The joint reached its target position.
@@ -70,10 +61,8 @@ For every task, we use a uniform system prompt that specifies the overall object
 
 Inspired by [Evaluating $\pi_0$ in the Wild](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/), we adopted a "vibe-checking" approach, improvising tasks rather than relying on a standard benchmark. For each task, we defined success criteria, measured relevant metrics, and documented failure modes. Full experiment logs are included in the appendix.
 
-**Trials.** Given the number of tasks and Astra’s relatively slow inference speed, unless otherwise specified, we performed 5 trials per task. To ensure that an observed capability is both reproducible and not simply due to random chance, we require that the relevant behavior appears in at least 2 out of 5 trials before including it as an illustrative example in [Strengths](03-strengths.md#strengths). This threshold demonstrates that the capability can be reliably elicited across independent runs, supporting its robustness even under limited trial counts.
-
-**Metrics.** We measure metrics including completion rate, inference time, token usage, etc. for each rollout. We include a full list of metrics and results in the appendix.
+**Example selection.** We include illustrative examples of Astra’s [Strengths](03-strengths.md#strengths) and [Weaknesses](04-weaknesses.md#weaknesses) only when the relevant behaviors are observed multiple times across independent runs. This criterion helps distinguish recurring capabilities and limitations from isolated successes or failures that may arise by chance.
 
 **Starting conditions.** Because we aim to test Astra in a real household environment, we varied the initial states of the robot and objects within the bounds of a reasonable test case, unless otherwise noted. Detailed starting conditions for each task are included in the appendix.
 
-**Stopping and interventions.** An episode ends when Astra declares `done`, the operator intervenes to prevent potential damage, the model produces an invalid output, or the time limit for the task is reached. We set different timeout thresholds for each task (see appendix for details).
+**Stopping and interventions.** An episode ends when Astra declares finished, the operator intervenes to prevent potential damage, the model produces an invalid output, or the time limit for the task is reached. We set different timeout thresholds for each task (see appendix for details).

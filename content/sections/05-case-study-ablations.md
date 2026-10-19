@@ -32,6 +32,8 @@ robot must: (1) open the oven lid, (2) pick up the bread from the table and plac
 
 We performed ablation studies on this task to evaluate the impact of various design choices and system components listed in {% tabref "ablation-settings" %}. In each ablation, only the component under investigation is changed, while all others remain at their default values. Note that these are empirical observations from our runs and are not intended to represent statistically significant results.
 
+**Metrics.** We measure metrics including completion rate, inference time, token usage, etc. for each rollout. We include a full list of metrics and results in the appendix.
+
 {% table "Default configuration and ablation variants.", "ablation-settings" %}
 | Setting                 | Default                                             | Variants Tested                                 |
 |-------------------------|-----------------------------------------------------|-------------------------------------------------|
