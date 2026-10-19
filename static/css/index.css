@@ -308,6 +308,10 @@ body {
   font-style: italic;
 }
 
+.eql-cntrb .eql-note + .eql-note::before {
+  content: " · ";
+}
+
 /* Section Titles */
 .title.is-3 {
   font-family: 'Inter', sans-serif !important;

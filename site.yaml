@@ -7,22 +7,40 @@ title_html: ""
 description: ""
 keywords: []
 
+# Author marks: corresponding → *, equal: 1 → †, equal: 2 → ‡
 authors:
-  - name: First Author
+  - name: Yuchen Zheng
     url: ""
-    equal: true
-    corresponding: false
-  - name: Second Author
+    corresponding: true
+  - name: Nima Jadali
     url: ""
-    equal: true
+    equal: 1
     corresponding: false
-  - name: Third Author
+  - name: Ankit Mehta
     url: ""
-    equal: false
+    equal: 1
     corresponding: false
+  - name: Rena Nakashima
+    url: ""
+    equal: 1
+  - name: Sumukha Suresh Srivatsa
+    url: ""
+    corresponding: false
+  - name: Nadira Mahamane
+    url: ""
+    equal: 2
+  - name: Harsh Muriki
+    url: ""
+    equal: 2
+  - name: Hannah Spigarelli
+    url: ""
+    equal: 2
+  - name: Sonia Chernova
+    url: ""
 
-affiliation: Institution Name
+affiliation: Georgia Institute of Technology
 equal_contribution: Indicates Equal Contribution
+equal_contribution_2: Indicates Equal Contribution
 corresponding: Corresponding author
 
 links:

@@ -75,7 +75,7 @@
               {% for author in site.authors %}
               <span class="author-block">
                 {% if author.url %}
-                <a href="{{ author.url }}">{{ author.name }}</a>{% else %}{{ author.name }}{% endif %}{% if author.equal %}<sup>*</sup>{% endif %}{% if author.corresponding %}<sup>†</sup>{% endif %}{% if not loop.last %},{% endif %}
+                <a href="{{ author.url }}">{{ author.name }}</a>{% else %}{{ author.name }}{% endif %}{% if author.equal == 2 %}<sup>‡</sup>{% elif author.equal %}<sup>†</sup>{% endif %}{% if author.corresponding %}<sup>*</sup>{% endif %}{% if not loop.last %},{% endif %}
               </span>
               {% endfor %}
             </div>
@@ -85,11 +85,11 @@
               {% if site.venue %}<span class="publication-venue">{{ site.venue }}</span>{% endif %}
             </div>
             {% endif %}
-            {% if site.equal_contribution or site.corresponding %}
+            {% if site.equal_contribution or site.equal_contribution_2 or site.corresponding %}
             <div class="is-size-6 eql-cntrb">
-              {% if site.equal_contribution %}<sup>*</sup>{{ site.equal_contribution }}{% endif %}
-              {% if site.equal_contribution and site.corresponding %} · {% endif %}
-              {% if site.corresponding %}<sup>†</sup>{{ site.corresponding }}{% endif %}
+              {% if site.equal_contribution %}<span class="eql-note"><sup>†</sup>{{ site.equal_contribution }}</span>{% endif %}
+              {% if site.equal_contribution_2 %}<span class="eql-note"><sup>‡</sup>{{ site.equal_contribution_2 }}</span>{% endif %}
+              {% if site.corresponding %}<span class="eql-note"><sup>*</sup>{{ site.corresponding }}</span>{% endif %}
             </div>
             {% endif %}
             {% set hasLinks = site.links.paper or site.links.arxiv or site.links.code or site.links.supplementary %}
