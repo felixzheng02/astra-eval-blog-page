@@ -1,9 +1,10 @@
 # Page metadata. Edit this file — do not put titles/authors in HTML.
 # Empty strings hide optional buttons and notes.
 
-title: Evaluating Astra-as-Policies in Household Environment
+title: "Beyond Tabletop: Astra in the Home"
 # Optional HTML (KaTeX allowed). Leave empty to use `title`.
 title_html: ""
+subtitle: Evaluating Astra as a Zero-Shot Robot Policy for Mobile Manipulation with Hello Robot Stretch 4
 description: ""
 keywords: []
 

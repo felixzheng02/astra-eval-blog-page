@@ -10,7 +10,10 @@ const markdownItAnchor = require("markdown-it-anchor");
 const texmath = require("markdown-it-texmath");
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const site = yaml.load(fs.readFileSync(path.join(root, "site.yaml"), "utf8"));
+
+function loadSite() {
+  return yaml.load(fs.readFileSync(path.join(root, "site.yaml"), "utf8"));
+}
 
 function slugify(value) {
   return String(value || "")
@@ -330,7 +333,7 @@ function numberFigures(html) {
 }
 
 export default function (eleventyConfig) {
-  eleventyConfig.addGlobalData("site", site);
+  eleventyConfig.addGlobalData("site", loadSite);
   eleventyConfig.addPassthroughCopy("static");
   eleventyConfig.addPassthroughCopy("media");
   eleventyConfig.addPassthroughCopy(".nojekyll");

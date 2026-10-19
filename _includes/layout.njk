@@ -71,6 +71,9 @@
             <h1 class="title is-1 publication-title">
               {% if site.title_html %}{{ site.title_html | safe }}{% else %}{{ site.title }}{% endif %}
             </h1>
+            {% if site.subtitle %}
+            <p class="publication-subtitle">{{ site.subtitle }}</p>
+            {% endif %}
             <div class="is-size-5 publication-authors">
               {% for author in site.authors %}
               <span class="author-block">

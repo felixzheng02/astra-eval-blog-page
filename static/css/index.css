@@ -122,6 +122,20 @@ body {
     line-height: 1.1 !important;
 }
 
+.publication-title:has(+ .publication-subtitle) {
+    margin-bottom: 0.85rem !important;
+}
+
+.publication-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    max-width: 44rem;
+    margin: 0 auto 2rem;
+}
+
 .publication-banner {
   max-height: 70vh;
   border-radius: var(--border-radius-lg);
@@ -617,6 +631,15 @@ code {
     line-height: 1.2 !important;
     margin-bottom: 1.5rem !important;
   }
+
+  .publication-title:has(+ .publication-subtitle) {
+    margin-bottom: 0.65rem !important;
+  }
+
+  .publication-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
   
   .publication-authors {
     font-size: 1rem !important;
@@ -663,6 +686,10 @@ code {
 @media screen and (max-width: 480px) {
   .publication-title {
     font-size: 2rem !important;
+  }
+
+  .publication-subtitle {
+    font-size: 1rem;
   }
   
   .hero-body {
