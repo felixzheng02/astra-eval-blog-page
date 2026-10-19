@@ -106,6 +106,184 @@ function setPlotlyStatus(el, message) {
   el.appendChild(status);
 }
 
+function kindOfTrace(trace) {
+  return trace && trace.meta ? trace.meta.kind : null;
+}
+
+function setupHighlightSelector(gd, cfg) {
+  if (!gd || !cfg || !Array.isArray(cfg.options) || !cfg.options.length) return;
+  if (gd.querySelector("[data-highlight-selector]")) return;
+
+  let current = null;
+  let chain = Promise.resolve();
+
+  function sameKey(a, b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    return (
+      String(a.id) === String(b.id) &&
+      String(a.condition || "") === String(b.condition || "")
+    );
+  }
+
+  function restyleHighlight(key) {
+    const indices = [];
+    const sizes = [];
+    const opacities = [];
+    const textColors = [];
+    const textIdx = [];
+    const id = key && key.id;
+    const condition = key && key.condition;
+    (gd.data || []).forEach((trace, i) => {
+      const kind = kindOfTrace(trace);
+      if (kind !== "trial" && kind !== "average") return;
+      indices.push(i);
+      const traceCond = trace.meta && trace.meta.condition;
+      const otherCondition = !!(condition && traceCond && traceCond !== condition);
+      if (kind === "trial") {
+        const trials = (trace.meta && trace.meta.trials) || [];
+        const sz = [];
+        const op = [];
+        trials.forEach((trial) => {
+          if (key == null) {
+            sz.push(cfg.trialSize);
+            op.push(cfg.trialOpacity);
+          } else if (
+            !otherCondition &&
+            id !== "average" &&
+            Number(trial) === Number(id)
+          ) {
+            sz.push(cfg.trialHiSize);
+            op.push(cfg.trialHiOpacity);
+          } else {
+            sz.push(cfg.trialSize);
+            op.push(cfg.dimOpacity);
+          }
+        });
+        sizes.push(sz);
+        opacities.push(op);
+      } else {
+        const hi = !!(key && id === "average" && !otherCondition);
+        const on = key == null || hi;
+        sizes.push([hi ? cfg.meanHiSize : cfg.meanSize]);
+        opacities.push([on ? 1 : cfg.dimOpacity]);
+        textIdx.push(i);
+        textColors.push(
+          on
+            ? (trace.meta && trace.meta.label_color) || "#263342"
+            : "rgba(38,51,66,0.22)"
+        );
+      }
+    });
+    if (!indices.length) return Promise.resolve();
+    return window.Plotly.restyle(
+      gd,
+      { "marker.size": sizes, "marker.opacity": opacities },
+      indices
+    ).then(() => {
+      if (!textIdx.length) return;
+      return window.Plotly.restyle(gd, { "textfont.color": textColors }, textIdx);
+    });
+  }
+
+  function updateSelectorButtons(key) {
+    const buttons = bar.querySelectorAll("button");
+    cfg.options.forEach((opt, i) => {
+      const on = key != null && String(opt.id) === String(key.id);
+      buttons[i].style.background = on ? "#263342" : "#fff";
+      buttons[i].style.color = on ? "#fff" : "#263342";
+      buttons[i].style.borderColor = on ? "#263342" : "#D5DAE0";
+    });
+  }
+
+  function highlight(key) {
+    if (sameKey(key, current)) return;
+    current = key;
+    updateSelectorButtons(key);
+    chain = chain.then(() => {
+      if (!sameKey(key, current)) return;
+      return restyleHighlight(current);
+    });
+  }
+
+  function keyFromEvent(ev) {
+    if (!ev || !ev.points || !ev.points.length) return null;
+    const pt = ev.points[0];
+    const trace = gd.data[pt.curveNumber];
+    const kind = kindOfTrace(trace);
+    const condition = trace && trace.meta && trace.meta.condition;
+    if (kind === "average") return { id: "average", condition };
+    if (kind === "trial") {
+      const trial = ((trace.meta && trace.meta.trials) || [])[pt.pointNumber];
+      if (trial == null) return null;
+      return { id: String(trial), condition };
+    }
+    return null;
+  }
+
+  gd.style.position = "relative";
+  const bar = document.createElement("div");
+  bar.dataset.highlightSelector = "true";
+  bar.setAttribute("aria-label", cfg.label || "Select to highlight");
+  bar.style.cssText = [
+    "position:absolute",
+    "left:12px",
+    "top:8px",
+    "right:48px",
+    "z-index:20",
+    "display:flex",
+    "flex-direction:row",
+    "flex-wrap:wrap",
+    "align-items:center",
+    "gap:6px",
+    "font-family:Arial,sans-serif",
+    "user-select:none",
+  ].join(";");
+  const caption = document.createElement("div");
+  caption.textContent = cfg.label || "Select to highlight:";
+  caption.style.cssText =
+    "font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#7A8490;padding-right:6px";
+  bar.appendChild(caption);
+  cfg.options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = opt.label;
+    btn.style.cssText = [
+      "margin:0",
+      "border:1px solid #D5DAE0",
+      "background:#fff",
+      "color:#263342",
+      "font:12px Arial,sans-serif",
+      "padding:5px 12px",
+      "border-radius:6px",
+      "cursor:pointer",
+    ].join(";");
+    btn.addEventListener("mouseenter", () => highlight({ id: opt.id }));
+    btn.addEventListener("click", (ev) => ev.preventDefault());
+    bar.appendChild(btn);
+  });
+  bar.addEventListener("mouseleave", () => highlight(null));
+  gd.appendChild(bar);
+
+  let unhoverTimer = null;
+  gd.on("plotly_hover", (ev) => {
+    if (unhoverTimer) {
+      clearTimeout(unhoverTimer);
+      unhoverTimer = null;
+    }
+    if (bar.matches(":hover")) return;
+    const key = keyFromEvent(ev);
+    if (key != null) highlight(key);
+  });
+  gd.on("plotly_unhover", () => {
+    if (bar.matches(":hover")) return;
+    unhoverTimer = setTimeout(() => {
+      unhoverTimer = null;
+      if (!bar.matches(":hover")) highlight(null);
+    }, 80);
+  });
+}
+
 async function renderPlotlyFrame(el) {
   const src = el.dataset.plotlySrc;
   if (!src) return;
@@ -117,12 +295,13 @@ async function renderPlotlyFrame(el) {
   const layout = { ...(spec.layout || {}), autosize: true };
   delete layout.width;
   delete layout.height;
+  const highlight = layout.meta && layout.meta.highlight;
   const filename =
     el.closest("[data-figure]")?.getAttribute("data-figure") || "figure";
   el.replaceChildren();
   const width = el.clientWidth || el.offsetWidth;
   if (width) {
-    el.style.height = `${Math.max(Math.round(width * (820 / 1450)), 320)}px`;
+    el.style.height = `${Math.max(Math.round(width * (960 / 1450)), 320)}px`;
   }
   await window.Plotly.newPlot(el, spec.data || [], layout, {
     responsive: true,
@@ -131,6 +310,7 @@ async function renderPlotlyFrame(el) {
     toImageButtonOptions: { format: "svg", filename },
   });
   window.Plotly.Plots.resize(el);
+  setupHighlightSelector(el, highlight);
 }
 
 async function setupPlotlyFigures() {
