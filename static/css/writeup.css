@@ -626,6 +626,14 @@ body.figure-lightbox-open .scroll-to-top {
   scroll-margin-top: 3.25rem;
 }
 
+.publication-teaser {
+  margin-top: 1.5rem;
+}
+
+.publication-teaser .media-block {
+  margin: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .teaser-grid-video,
   .teaser-grid-text,

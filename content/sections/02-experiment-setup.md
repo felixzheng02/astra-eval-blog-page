@@ -51,7 +51,7 @@ For every task, we use a uniform system prompt that specifies the overall object
 
 ### Tasks and evaluation protocol
 
-Inspired by [Evaluating $\pi_0$ in the Wild](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/), we adopted a "vibe-checking" approach, improvising tasks rather than relying on a standard benchmark. For each task, we defined success criteria, measured relevant metrics, and documented failure modes.
+Inspired by prior work "Evaluating $\pi_0$ in the Wild" ([Wang et al., 2025](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/)), we adopted a "vibe-checking" approach, improvising tasks rather than relying on a standard benchmark. For each task, we defined success criteria, measured relevant metrics, and documented failure modes.
 
 **Example selection.** We include illustrative examples of Astra’s [Strengths](#strengths) and [Weaknesses](#weaknesses) only when the relevant behaviors are observed multiple times across independent runs. This criterion helps distinguish recurring capabilities and limitations from isolated successes or failures that may arise by chance.
 

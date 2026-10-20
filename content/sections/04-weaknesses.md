@@ -53,10 +53,11 @@ Astra often lacked sufficient awareness of its surroundings and spatial context 
 {% video "/media/videos/collide-dishwasher.mp4", "Instruction: `Pick up the cup.`; While attempting to grasp the cup, the robot collided with the dishwasher." %}
 {% endvideoGrid %}
 
+<!-- 
 ### Time and token cost
 
 {% comment "Felix" %}
 need to get the numbers
 {% endcomment %}
 
-Astra's inference is both time- and token-intensive. Across all tasks and episodes, each Codex turn takes an average of ** seconds and consumes ** tokens. This amounts to ** tokens per minute of execution, with inference accounting for **% of the total runtime.
+Astra's inference is both time- and token-intensive. Across all tasks and episodes, each Codex turn takes an average of ** seconds and consumes ** tokens. This amounts to ** tokens per minute of execution, with inference accounting for **% of the total runtime. -->

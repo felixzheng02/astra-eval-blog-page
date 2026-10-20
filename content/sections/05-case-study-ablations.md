@@ -44,10 +44,6 @@ We performed ablation studies on this task to evaluate the impact of various des
 | Embodiment description  | On                                                  | Off                                             |
 {% endtable %}
 
-{% comment "Felix" %}
-at least one more ablation (execution feedback > embodiment description > proprioception > cameras)
-{% endcomment %}
-
 **Metrics.** We record the metrics in {% tabref "metrics" %} for each rollout. Per-run results for each ablation are tabulated in the appendix: [reasoning effort](#reasoning-effort-results) ({% tabref "appendix-reasoning-trials" %}) and [wrist depth](#wrist-depth-results) ({% tabref "appendix-depth-trials" %}).
 
 {% table "Metrics recorded per episode.", "metrics" %}
@@ -88,10 +84,6 @@ In summary, we observed no systematic benefit to increasing reasoning above the 
 We evaluated three configurations for providing wrist depth information: (1) no depth input, (2) a color-mapped depth image, and (3) an API allowing Astra to query depth at specific image coordinates (the default setting). The task metrics are shown in {% figref "ablation-depth" %}, and our main findings are as follows:
 
 - Omitting depth information resulted in similar overall performance but required more Codex turns, greater total time, and increased token usage. Without access to depth data, Astra had to estimate distances from RGB images alone, which led to wasted turns, time, and tokens on empty reaching and grasping. However, Astra consistently retried and recovered from these failures, resulting in comparable success and completion rates overall.
-
-{% comment "Nima" %}
-Suggestion: "depth value, leading to useless or confusing inputs into the model. As a result"
-{% endcomment %}
 
 - Providing a color-mapped depth image produced the weakest performance. Missed grasp and retries were as common as when no depth information was provided, so the duration of the task completion also suffered. We suspect this is because the colorized depth image is not perfectly aligned with the RGB image, unlike the API option where each pixel directly corresponds to a depth value. As a result, the additional information was not only unhelpful but may have distracted Astra and degraded its effectiveness.
 
