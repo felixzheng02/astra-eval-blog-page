@@ -1,8 +1,8 @@
 ---
-nav: Case Study and Ablations
+nav: Ablation Studies
 ---
 
-## Case Study and Ablations
+## Ablation Studies
 
 {% raw %}
 <!-- Extra setup notes, extra rollouts, hardware tables.
@@ -17,21 +17,24 @@ nav: Case Study and Ablations
 
 {% endraw %}
 
-In this section, we provide a detailed case study of Astra autonomously controlling the robot to toast a bagel. To successfully complete the task, the robot must complete five sub-goals:
+We conduct ablation studies to assess how different components affect Astra’s autonomous control in executing a representative household task: toasting a bagel.
 
-1. Open the oven lid.
-2. Pick up the bread from the dish on the table.
-3. Place the bread in the oven.
-4. Close the lid.
-5. Rotate the knob to the 300 mark.
+### Experiment setup
 
-This task is nontrivial, as it requires Astra to plan a sequence of actions, manipulate articulated objects, precisely place an items within a cluttered space, identify the "300" marker, and carefully rotate a small knob to the correct location.
+**Instruction:** `put the bread in the oven and rotate the top knob to 300 deg`
 
-**Instruction:** `put the bread in the oven and rotate the top knob to 300 deg`. **Time limit:** 13 min.
+**Time limit:** 13 minutes
+
+**Task Decomposition:** To complete the instruction, Astra must accomplish the following five sub-goals in sequence:
+1. Open the oven lid
+2. Pick up the bread from the dish on the table
+3. Place the bread in the oven
+4. Close the lid
+5. Rotate the knob to the 300 mark
 
 {% video "/media/videos/case-study.mp4", "Demonstration of a successful rollout using the default configuration." %}
 
-We performed ablation studies on this task to evaluate the impact of various design choices and system components listed in {% tabref "ablation-settings" %}. In each ablation, only the component under investigation is changed, while all others remain at their default values. Note that these are empirical observations from our runs and are not intended to represent statistically significant results.
+**Ablated Components and Variants:** {% tabref "ablation-settings" %} shows all system components we evaluated. For each ablation, we varied a single system component while keeping all other settings at their default values.
 
 {% table "Default configuration and ablation variants.", "ablation-settings" %}
 | Setting                 | Default                                             | Variants Tested                                 |

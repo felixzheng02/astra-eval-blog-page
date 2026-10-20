@@ -294,25 +294,58 @@ async function renderPlotlyFrame(el) {
     throw new Error(`Figure JSON ${response.status} ${src}`);
   }
   const spec = await response.json();
-  const layout = { ...(spec.layout || {}), autosize: true };
-  delete layout.width;
-  delete layout.height;
+  // Scale the whole chart with its frame so browser zoom preserves its proportions.
+  const chartWidth = 960;
+  const chartHeight = chartWidth * (920 / 1450);
+  const layout = {
+    ...(spec.layout || {}),
+    autosize: false,
+    width: chartWidth,
+    height: chartHeight,
+  };
   const highlight = layout.meta && layout.meta.highlight;
   const filename =
     el.closest("[data-figure]")?.getAttribute("data-figure") || "figure";
-  el.replaceChildren();
-  const width = el.clientWidth || el.offsetWidth;
-  if (width) {
-    el.style.height = `${Math.max(Math.round(width * (920 / 1450)), 320)}px`;
+  const chart = document.createElement("div");
+  Object.assign(chart.style, {
+    position: "absolute",
+    left: "0",
+    top: "0",
+    width: `${chartWidth}px`,
+    height: `${chartHeight}px`,
+    transformOrigin: "top left",
+    fontSize: "16px",
+    lineHeight: "normal",
+  });
+  el.style.position = "relative";
+  el.replaceChildren(chart);
+  let previousWidth = 0;
+  function fitChart() {
+    const width = el.clientWidth;
+    if (!width || width === previousWidth) return false;
+    previousWidth = width;
+    const scale = width / chartWidth;
+    chart.style.transform = `scale(${scale})`;
+    el.style.height = `${chartHeight * scale}px`;
+    return true;
   }
-  await window.Plotly.newPlot(el, spec.data || [], layout, {
-    responsive: true,
+  fitChart();
+  await window.Plotly.newPlot(chart, spec.data || [], layout, {
+    responsive: false,
     displaylogo: false,
     modeBarButtonsToRemove: ["lasso2d", "select2d"],
     toImageButtonOptions: { format: "svg", filename },
   });
-  window.Plotly.Plots.resize(el);
-  setupSampleHighlight(el, highlight);
+  // Bulma's .icon uses rem; keep Plotly toolbar icons in the chart's own scale.
+  chart.querySelectorAll(".modebar .icon").forEach((icon) => {
+    icon.style.width = "1em";
+    icon.style.height = "1em";
+  });
+  setupSampleHighlight(chart, highlight);
+  const resizeObserver = new ResizeObserver(() => {
+    if (fitChart()) window.Plotly.redraw(chart);
+  });
+  resizeObserver.observe(el);
 }
 
 async function setupPlotlyFigures() {
