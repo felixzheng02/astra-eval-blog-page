@@ -15,9 +15,11 @@ nav: Appendix
 | Codex turn | 180 s | Episode ends |
 {% endtable %}
 
-### Developer instructions
+### Prompt
 
-Identical for every task. The task instruction is appended at the end as `Task: <instruction>`. Shown with the default configuration.
+#### System prompt
+
+Identical for every task and sent once at the start of each Codex session. The task instruction is appended at the end as `Task: <instruction>`. Shown with the default configuration.
 
 {% raw %}
 ```text
@@ -85,24 +87,23 @@ arm: completed
 
 ### Action schema
 
-Astra returns one JSON object per turn:
+Astra returns one JSON object per turn. Example:
 
 {% raw %}
 ```json
 {
-  "reasoning": "...",
-  "kind": "move",
-  "joint_relative_position_commands": [{
-    "drive":       {"direction": "hold", "cm": 0},
-    "slide":       {"direction": "hold", "cm": 0},
-    "turn":        {"direction": "hold", "deg": 0},
-    "lift":        {"direction": "up", "cm": 5},
-    "arm":         {"direction": "extend", "cm": 10},
-    "wrist_swing": {"direction": "hold", "deg": 0},
-    "wrist_tilt":  {"direction": "hold", "deg": 0},
-    "wrist_twist": {"direction": "hold", "deg": 0},
-    "grip":        {"direction": "open", "pct": 40}
-  }]
+  "reasoning":"Orient the fingers vertically for the horizontal drawer handle and lower toward it, staying in front of the drawer.",
+  "kind":"move",
+  "joint_relative_position_commands":[{
+    "drive":{"direction":"hold","cm":0},
+    "slide":{"direction":"hold","cm":0},
+    "turn":{"direction":"hold","deg":0},
+    "lift":{"direction":"down","cm":20},
+    "arm":{"direction":"hold","cm":0},
+    "wrist_swing":{"direction":"hold","deg":0},
+    "wrist_tilt":{"direction":"up","deg":30},
+    "wrist_twist":{"direction":"clockwise","deg":90},
+    "grip":{"direction":"hold","pct":0}}]
 }
 ```
 {% endraw %}
@@ -127,7 +128,7 @@ Astra returns one JSON object per turn:
 - Each waypoint is a displacement from the joint state in the current observation.
 - `drive`, `slide`, `turn` are in the robot body frame. Wrist keys are in the wrist frame. Left and up are the robot's, not the camera's.
 - `grip` changes the opening by percentage points (0 closed, 100 fully open).
-- A command that would push lift, arm, a wrist joint, or the gripper past a soft stop is rejected in full and nothing moves.
+- A command that would push lift, arm, a wrist joint, or the gripper past joint limit is rejected in full and nothing moves.
 - `done` must still include one waypoint with every key set to `hold` 0. It is not executed.
 
 <details>
@@ -381,8 +382,9 @@ Astra returns one JSON object per turn:
 
 </details>
 
-<details>
-<summary><code>get_gripper_depth</code> tool definition</summary>
+### Wrist depth API
+
+The `get_gripper_depth` tool returns wrist-camera depth values for specified image coordinates.
 
 {% raw %}
 ```json
@@ -422,13 +424,11 @@ Astra returns one JSON object per turn:
 ```
 {% endraw %}
 
-</details>
+### Case study and ablations full results
 
-### Ablation results
+#### Reasoning effort
 
-#### Reasoning effort results
-
-Task: [case study](#case-study-and-ablations). 5 trials per level. All other settings at default.
+We conducted 5 trials per reasoning level. All other settings at default.
 
 {% table "Reasoning effort, mean over 5 trials.", "appendix-reasoning-summary" %}
 | Effort | Success | Completion | False `done` | Turns | Total time (min) | Inference share | s / turn | Tokens (M) |
@@ -460,7 +460,7 @@ Task: [case study](#case-study-and-ablations). 5 trials per level. All other set
 
 #### Wrist depth results
 
-Task: [case study](#case-study-and-ablations). 5 trials per setting. All other settings at default. Values are `astra_depth` settings: `api` = `get_gripper_depth` tool, `image` = color-mapped depth image, `none` = no depth. The `api` trials are the `high` trials in {% tabref "appendix-reasoning-trials" %}.
+We conducted 5 trials per setting. All other settings at default. `api` = `get_gripper_depth` tool, `image` = color-mapped depth image, `none` = no depth..
 
 {% table "Wrist depth, mean over 5 trials.", "appendix-depth-summary" %}
 | Depth | Success | Completion | False `done` | Turns | Total time (min) | Inference share | s / turn | Tokens (M) |
