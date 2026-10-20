@@ -2,14 +2,6 @@
 nav: Case Study and Ablations
 ---
 
-{% comment "Felix" %}
-not sure if 'case study' is appropriate
-{% endcomment %}
-
-{% comment "Ankit" %}
-more sections
-{% endcomment %}
-
 ## Case Study and Ablations
 
 {% raw %}
@@ -25,14 +17,21 @@ more sections
 
 {% endraw %}
 
-In this section, we provide a detailed case study of Astra autonomously controlling the robot to toast a bagel. To successfully complete the task, the 
-robot must: (1) open the oven lid, (2) pick up the bread from the table and place it into the oven, (3) close the lid, and (4) rotate the knob to the 300-degree mark to turn on the oven. This task is nontrivial, as it requires Astra to plan a sequence of actions, manipulate articulated objects, precisely place an items within a cluttered space, identify the "300" marker, and carefully rotate a small knob to the correct location.
+In this section, we provide a detailed case study of Astra autonomously controlling the robot to toast a bagel. To successfully complete the task, the robot must complete five sub-goals:
+
+1. Open the oven lid.
+2. Pick up the bread from the dish on the table.
+3. Place the bread in the oven.
+4. Close the lid.
+5. Rotate the knob to the 300 mark.
+
+This task is nontrivial, as it requires Astra to plan a sequence of actions, manipulate articulated objects, precisely place an items within a cluttered space, identify the "300" marker, and carefully rotate a small knob to the correct location.
+
+**Instruction:** `put the bread in the oven and rotate the top knob to 300 deg`. **Time limit:** 13 min.
 
 {% video "/media/videos/case-study.mp4", "Demonstration of a successful rollout using the default configuration." %}
 
 We performed ablation studies on this task to evaluate the impact of various design choices and system components listed in {% tabref "ablation-settings" %}. In each ablation, only the component under investigation is changed, while all others remain at their default values. Note that these are empirical observations from our runs and are not intended to represent statistically significant results.
-
-**Metrics.** We measure metrics including completion rate, inference time, token usage, etc. for each rollout. We include a full list of metrics and results in the appendix.
 
 {% table "Default configuration and ablation variants.", "ablation-settings" %}
 | Setting                 | Default                                             | Variants Tested                                 |
@@ -49,13 +48,34 @@ We performed ablation studies on this task to evaluate the impact of various des
 at least one more ablation (execution feedback > embodiment description > proprioception > cameras)
 {% endcomment %}
 
+**Metrics.** We record the metrics in {% tabref "metrics" %} for each rollout. Per-run results for each ablation are tabulated in the appendix: [reasoning effort](#reasoning-effort-results) ({% tabref "appendix-reasoning-trials" %}) and [wrist depth](#wrist-depth-results) ({% tabref "appendix-depth-trials" %}).
+
+{% table "Metrics recorded per episode.", "metrics" %}
+| Metric | Definition |
+| --- | --- |
+| Success | All sub-goals achieved |
+| Completion rate | Fraction of sub-goals achieved |
+| Codex turns | Model calls in the episode |
+| Total time | Episode start to episode end |
+| Inference time per turn | Codex latency for one turn, from request to reply |
+| Execution time | Sum over commands of the time from sending the command until the commanded joints stop. Commands that move nothing count as 0 |
+| False-success declarations | Times Astra returns `done` when the task is not complete |
+| Unnecessary actions | Actions that do not advance the task, including continuing after the task is complete |
+| Collisions | Contacts with the environment or with objects not meant to be touched |
+| Human interventions | Times the operator stopped the episode or physically intervened |
+| Token usage | Input tokens (including cached input) plus output tokens (including reasoning), from the Codex session log |
+{% endtable %}
+
+- Inference and execution can overlap, so they need not sum to total time.
+- Joint motion is sampled at 5 Hz, so each command's execution time is accurate to about 0.2 s.
+
 ### Reasoning level
 
 We evaluated Astra's performance at three reasoning levels: `low`, `high` (default), and `ultra`, comparing task metrics as shown in {% figref "ablation-reasoning" %}. Our main findings are:
 
 - Lowering the reasoning level from `high` to `low` reduced both the success rate and completion rate. With `low` reasoning, Astra frequently forgot or omitted important steps, such as closing the lid before setting the oven temperature. In one instance, it dropped the bread onto the robot base, causing the human operator to end the episode.
 
-- Raising the reasoning level from `high` to `ultra` did not lead to better performance. Notably, in one `high`-level run, the robot was unable to properly pick up the bread, failed to place it inside the oven, and ultimately caused a severe collision that required human intervention. While such failures were rare, when they did occur, Astra often [struggled to reason about dependencies across steps](04-weaknesses.md#fails-to-reason-about-dependencies-across-steps) and could not recover. In practice, we found that `high` and `ultra` reasoning levels performed similarly.
+- Raising the reasoning level from `high` to `ultra` did not lead to better performance. Notably, in one `high`-level run, the robot was unable to properly pick up the bread, failed to place it inside the oven, and ultimately caused a severe collision that required human intervention. While such failures were rare, when they did occur, Astra often [struggled to reason about dependencies across steps](#fails-to-reason-about-dependencies-across-steps) and could not recover. In practice, we found that `high` and `ultra` reasoning levels performed similarly.
 
 - Interestingly, adjusting the reasoning level had little impact on inference time or token usage.
 

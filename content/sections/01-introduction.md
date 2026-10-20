@@ -15,12 +15,6 @@ Visible comment on the page.
 -->
 {% endraw %}
 
-{% comment "Felix" %}
-TODOs:
-
-- eye-catching video: plan to concatenate lots of robot execution clips and show it when people enters the webpage; scroll down to the blog.
-{% endcomment %}
-
 <!-- The broad knowledge and reasoning capabilities of large language models (LLMs) and vision-language models (VLMs) have motivated growing efforts to leverage these models in building generalist robots that can handle diverse tasks. 
 One direction trains vision-language-action (VLA) models on robot data to predict actions directly, which requires substantial data. 
 Another direction prompts general-purpose models to interact with robots, often using them to produce high-level plans that are then executed in sequence by separate controllers. Code as Policies (CaP) goes further by letting models generate executable control programs, yet its performance is still limited by hand-designed perception and control APIs.

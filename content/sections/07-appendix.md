@@ -424,78 +424,11 @@ Astra returns one JSON object per turn:
 
 </details>
 
-### Tasks
-
-{% comment "TODO" %}
-Add the time limit per task and starting conditions (format to be decided). Confirm whether this list is complete (it currently lists only tasks shown in the videos).
-{% endcomment %}
-
-{% table "Tasks shown in this post. ✓ = shown in Strengths, ✗ = shown in Weaknesses.", "appendix-tasks" %}
-| Instruction | Shown as | Time limit |
-| --- | --- | --- |
-| `Pull out a tissue.` | ✓ |  |
-| `Help me open the jar.` | ✓ |  |
-| `Toast the bagel.` | ✓ |  |
-| `Turn on the lamp.` | ✓ |  |
-| `Pour ice cubes to another cup.` | ✓ |  |
-| `Make bed.` | ✓ |  |
-| `Find the android phone in the living room.` | ✓ |  |
-| `Put an apple on the nightstand.` | ✓ |  |
-| `Bring me something to wipe the table.` | ✓ |  |
-| `Set up the table.` | ✓ |  |
-| `Put the ball in the drawer.` | ✓ |  |
-| `Clean up the play area.` | ✓ |  |
-| `Open the left door of the cabinet under the sink.` | ✓ |  |
-| `Upright the cup and clean up the mess.` | ✓ |  |
-| `Open the dishwasher door. (with and without step-by-step guidance)` | ✓ |  |
-| `Close the dishwasher.` | ✓ |  |
-| `Turn on the sink faucet.` | ✓ |  |
-| `Make coffee.` | ✗ |  |
-| `Put the shapes in the box.` | ✗ |  |
-| `Load the mug in the dishwasher, facing down.` | ✗ |  |
-| `Stack the bottled water on top of the cup.` | ✗ |  |
-| `Open the fridge.` | ✗ |  |
-| `Pick up the cup.` | ✗ |  |
-{% endtable %}
-
-#### Case study task
-
-Instruction: `put the bread in the oven and rotate the top knob to 300 deg`
-
-Sub-goals used for completion rate:
-
-1. Open the oven lid.
-2. Pick up the bread from the dish on the table.
-3. Place the bread in the oven.
-4. Close the lid.
-5. Rotate the knob to the 300 mark.
-
-### Metrics
-
-{% table "Metrics recorded per episode.", "appendix-metrics" %}
-| Metric | Definition |
-| --- | --- |
-| Success | All sub-goals achieved |
-| Completion rate | Fraction of sub-goals achieved |
-| Codex turns | Model calls in the episode |
-| Total time | Episode start to episode end |
-| Inference time per turn | Codex latency for one turn, from request to reply |
-| Execution time | Sum over commands of the time from sending the command until the commanded joints stop. Commands that move nothing count as 0 |
-| False-success declarations | Times Astra returns `done` when the task is not complete |
-| Unnecessary actions | Actions that do not advance the task, including continuing after the task is complete |
-| Collisions | Contacts with the environment or with objects not meant to be touched |
-| Human interventions | Times the operator stopped the episode or physically intervened |
-| Token usage | Input tokens (including cached input) plus output tokens (including reasoning), from the Codex session log |
-{% endtable %}
-
-- Inference and execution can overlap, so they need not sum to total time.
-- Joint motion is sampled at 5 Hz, so each command's execution time is accurate to about 0.2 s.
-
 ### Ablation results
 
-#### Reasoning effort
+#### Reasoning effort results
 
-Task: case study task. 5 trials per level. All other settings at default.
+Task: [case study](#case-study-and-ablations). 5 trials per level. All other settings at default.
 
 {% table "Reasoning effort, mean over 5 trials.", "appendix-reasoning-summary" %}
 | Effort | Success | Completion | False `done` | Turns | Total time (min) | Inference share | s / turn | Tokens (M) |
@@ -525,14 +458,34 @@ Task: case study task. 5 trials per level. All other settings at default.
 | `ultra` | 5 | `done` | ✗ | 80% | 56 | 10.9 | 8.7 | 1.5 | 9.3 | 8.57 |
 {% endtable %}
 
-#### Wrist depth
+#### Wrist depth results
 
-{% comment "TODO" %}
-Per-trial results for no depth and color-mapped depth image are not in the experiment repo (`results/astra_metrics/` has reasoning effort only). Add the CSV or numbers.
-{% endcomment %}
+Task: [case study](#case-study-and-ablations). 5 trials per setting. All other settings at default. Values are `astra_depth` settings: `api` = `get_gripper_depth` tool, `image` = color-mapped depth image, `none` = no depth. The `api` trials are the `high` trials in {% tabref "appendix-reasoning-trials" %}.
 
-### Experiment logs
+{% table "Wrist depth, mean over 5 trials.", "appendix-depth-summary" %}
+| Depth | Success | Completion | False `done` | Turns | Total time (min) | Inference share | s / turn | Tokens (M) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `api` (default) | 3/5 | 92% | 0/5 | 49.6 | 10.3 | 82% | 10.3 | 7.52 |
+| `image` | 1/5 | 61% | 3/5 | 63.8 | 11.7 | 81% | 8.9 | 7.66 |
+| `none` | 2/5 | 84% | 2/5 | 66.6 | 14.6 | 84% | 11.1 | 7.97 |
+{% endtable %}
 
-{% comment "TODO" %}
-Full logs are not in the experiment repo (`logs/` is git-ignored). Decide where to host them (e.g. the `supplementary` link in `site.yaml`) and link here.
-{% endcomment %}
+{% table "Wrist depth, per trial. Ended by: `done` = Astra declared completion; stop = operator stopped the episode.", "appendix-depth-trials" %}
+| Depth | Trial | Ended by | Success | Completion | Turns | Total (min) | Inference (min) | s / turn | Tokens (M) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `api` | 1 | `done` | ✓ | 100% | 47 | 9.1 | 7.2 | 9.1 | 6.63 |
+| `api` | 2 | `done` | ✓ | 100% | 50 | 10.4 | 8.6 | 10.3 | 7.98 |
+| `api` | 3 | stop | ✗ | 80% | 51 | 10.9 | 9.1 | 10.8 | 7.77 |
+| `api` | 4 | stop | ✗ | 80% | 51 | 12.1 | 10.3 | 12.1 | 8.02 |
+| `api` | 5 | `done` | ✓ | 100% | 49 | 9.2 | 7.4 | 9.1 | 7.20 |
+| `image` | 1 | `done` | ✗ | 60% | 71 | 14.8 | 12.2 | 10.3 | 8.50 |
+| `image` | 2 | `done` | ✓ | 100% | 67 | 11.8 | 9.5 | 8.5 | 7.94 |
+| `image` | 3 | `done` | ✗ | 60% | 64 | 13.3 | 11.1 | 10.4 | 7.49 |
+| `image` | 4 | stop | ✗ | 40% | 49 | 7.4 | 5.8 | 7.1 | 6.27 |
+| `image` | 5 | `done` | ✗ | 45% | 68 | 11.3 | 9.0 | 7.9 | 8.10 |
+| `none` | 1 | `done` | ✓ | 100% | 66 | 13.8 | 11.7 | 10.6 | 7.79 |
+| `none` | 2 | `done` | ✗ | 80% | 65 | 13.8 | 11.4 | 10.6 | 7.68 |
+| `none` | 3 | `done` | ✓ | 100% | 59 | 11.8 | 9.8 | 9.9 | 6.95 |
+| `none` | 4 | `done` | ✗ | 80% | 81 | 17.8 | 14.9 | 11.1 | 10.05 |
+| `none` | 5 | stop | ✗ | 60% | 62 | 16.0 | 14.0 | 13.6 | 7.38 |
+{% endtable %}

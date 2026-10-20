@@ -63,10 +63,9 @@ links:
 url: ""
 
 bibtex: |
-  @article{YourPaperKey2024,
-    title={Your Paper Title Here},
-    author={First Author and Second Author and Third Author},
-    journal={Conference/Journal Name},
-    year={2024},
-    url={https://your-domain.com/your-project-page}
+  @misc{zheng2026astra,
+    title={{Astra} Beyond Tabletop: Into the Home},
+    author={Zheng, Yuchen and Jadali, Nima and Mehta, Ankit and Nakashima, Rena and Srivatsa, Sumukha Suresh and Mahamane, Nadira and Muriki, Harsh and Spigarelli, Hannah and Chernova, Sonia},
+    year={2026},
+    note={Blog post, Georgia Institute of Technology}
   }
