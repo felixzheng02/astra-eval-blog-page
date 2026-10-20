@@ -77,12 +77,7 @@ function stripTags(html) {
 }
 
 function readTemplateContent(section) {
-  try {
-    return section?.templateContent ?? "";
-  } catch (error) {
-    if (error?.name === "TemplateContentPrematureUseError") return "";
-    throw error;
-  }
+  return section?.templateContent ?? "";
 }
 
 function headingOutline(html) {
@@ -343,7 +338,6 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addFilter("url", localUrl);
   eleventyConfig.addFilter("slug", slugify);
-  eleventyConfig.addFilter("templateContent", readTemplateContent);
   eleventyConfig.addFilter("authorNames", (authors = []) =>
     authors.map((author) => author.name).filter(Boolean).join(", ")
   );
