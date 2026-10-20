@@ -342,7 +342,7 @@ body.figure-lightbox-open .scroll-to-top {
 .media-block.plotly-block .plotly-frame {
   width: 100%;
   min-height: 20rem;
-  aspect-ratio: 1450 / 960;
+  aspect-ratio: 1450 / 920;
   background: #fff;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-md);

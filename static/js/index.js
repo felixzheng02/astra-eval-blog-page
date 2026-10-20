@@ -110,9 +110,8 @@ function kindOfTrace(trace) {
   return trace && trace.meta ? trace.meta.kind : null;
 }
 
-function setupHighlightSelector(gd, cfg) {
-  if (!gd || !cfg || !Array.isArray(cfg.options) || !cfg.options.length) return;
-  if (gd.querySelector("[data-highlight-selector]")) return;
+function setupSampleHighlight(gd, cfg) {
+  if (!gd || !cfg) return;
 
   let current = null;
   let chain = Promise.resolve();
@@ -186,20 +185,9 @@ function setupHighlightSelector(gd, cfg) {
     });
   }
 
-  function updateSelectorButtons(key) {
-    const buttons = bar.querySelectorAll("button");
-    cfg.options.forEach((opt, i) => {
-      const on = key != null && String(opt.id) === String(key.id);
-      buttons[i].style.background = on ? "#263342" : "#fff";
-      buttons[i].style.color = on ? "#fff" : "#263342";
-      buttons[i].style.borderColor = on ? "#263342" : "#D5DAE0";
-    });
-  }
-
   function highlight(key) {
     if (sameKey(key, current)) return;
     current = key;
-    updateSelectorButtons(key);
     chain = chain.then(() => {
       if (!sameKey(key, current)) return;
       return restyleHighlight(current);
@@ -221,65 +209,19 @@ function setupHighlightSelector(gd, cfg) {
     return null;
   }
 
-  gd.style.position = "relative";
-  const bar = document.createElement("div");
-  bar.dataset.highlightSelector = "true";
-  bar.setAttribute("aria-label", cfg.label || "Select to highlight");
-  bar.style.cssText = [
-    "position:absolute",
-    "left:12px",
-    "top:8px",
-    "right:48px",
-    "z-index:20",
-    "display:flex",
-    "flex-direction:row",
-    "flex-wrap:wrap",
-    "align-items:center",
-    "gap:6px",
-    "font-family:Arial,sans-serif",
-    "user-select:none",
-  ].join(";");
-  const caption = document.createElement("div");
-  caption.textContent = cfg.label || "Select to highlight:";
-  caption.style.cssText =
-    "font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#7A8490;padding-right:6px";
-  bar.appendChild(caption);
-  cfg.options.forEach((opt) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = opt.label;
-    btn.style.cssText = [
-      "margin:0",
-      "border:1px solid #D5DAE0",
-      "background:#fff",
-      "color:#263342",
-      "font:12px Arial,sans-serif",
-      "padding:5px 12px",
-      "border-radius:6px",
-      "cursor:pointer",
-    ].join(";");
-    btn.addEventListener("mouseenter", () => highlight({ id: opt.id }));
-    btn.addEventListener("click", (ev) => ev.preventDefault());
-    bar.appendChild(btn);
-  });
-  bar.addEventListener("mouseleave", () => highlight(null));
-  gd.appendChild(bar);
-
   let unhoverTimer = null;
   gd.on("plotly_hover", (ev) => {
     if (unhoverTimer) {
       clearTimeout(unhoverTimer);
       unhoverTimer = null;
     }
-    if (bar.matches(":hover")) return;
     const key = keyFromEvent(ev);
     if (key != null) highlight(key);
   });
   gd.on("plotly_unhover", () => {
-    if (bar.matches(":hover")) return;
     unhoverTimer = setTimeout(() => {
       unhoverTimer = null;
-      if (!bar.matches(":hover")) highlight(null);
+      highlight(null);
     }, 80);
   });
 }
@@ -301,7 +243,7 @@ async function renderPlotlyFrame(el) {
   el.replaceChildren();
   const width = el.clientWidth || el.offsetWidth;
   if (width) {
-    el.style.height = `${Math.max(Math.round(width * (960 / 1450)), 320)}px`;
+    el.style.height = `${Math.max(Math.round(width * (920 / 1450)), 320)}px`;
   }
   await window.Plotly.newPlot(el, spec.data || [], layout, {
     responsive: true,
@@ -310,7 +252,7 @@ async function renderPlotlyFrame(el) {
     toImageButtonOptions: { format: "svg", filename },
   });
   window.Plotly.Plots.resize(el);
-  setupHighlightSelector(el, highlight);
+  setupSampleHighlight(el, highlight);
 }
 
 async function setupPlotlyFigures() {
