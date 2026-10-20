@@ -1,0 +1,51 @@
+{
+  "output": "media/videos/blog-highlights.mp4",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "frames": 480,
+  "duration_seconds": 16.0,
+  "opening": [
+    {
+      "source": "find-phone.mp4",
+      "start_seconds": 20.366667,
+      "end_seconds": 25.366667,
+      "quadrant": "top-left",
+      "description": "find a phone in the living room"
+    },
+    {
+      "source": "clean-spilled-water.mp4",
+      "start_seconds": 18.054167,
+      "end_seconds": 23.054167,
+      "quadrant": "top-right",
+      "description": "wipe the table"
+    },
+    {
+      "source": "close-dishwasher.mp4",
+      "start_seconds": 42.754167,
+      "end_seconds": 47.754167,
+      "quadrant": "bottom-left",
+      "description": "close a dishwasher"
+    },
+    {
+      "source": "load-mug.mp4",
+      "start_seconds": 25.333333,
+      "end_seconds": 30.333333,
+      "quadrant": "bottom-right",
+      "description": "load a mug in dishwasher"
+    }
+  ],
+  "case_study_source_start_seconds": 26.615000000000002,
+  "case_study_source_end_seconds": 34.615,
+  "case_study_start_seconds": 5.0,
+  "chart_reveal_start_seconds": 8.0,
+  "chart_reveal_duration_seconds": 0.8,
+  "chart_section_duration_seconds": 5.0,
+  "chart_title": "More reasoning didn\u2019t guarantee better results.",
+  "end_card_start_seconds": 13.0,
+  "end_card_duration_seconds": 3,
+  "end_card_text": "Check the full blog for more video and analysis!",
+  "audio": "None; all supplied video sources are silent"
+}
