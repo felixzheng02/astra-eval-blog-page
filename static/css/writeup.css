@@ -749,10 +749,11 @@ body.figure-lightbox-open .scroll-to-top {
   }
 }
 
-/* Big monitors: scale the whole page with the window width (like browser zoom), so the
-   article column doesn't become a narrow strip. Up to ~1920px wide nothing changes (16px). */
+/* Big monitors: scale the whole page with the window width (like browser zoom), so every
+   screen wider than a laptop (~1700px) keeps the laptop's proportions: the article column
+   stays ~56% of the window. Below that nothing changes (16px). */
 html {
-  font-size: clamp(16px, calc(6px + 0.52vw), 24px);
+  font-size: max(16px, 0.94vw);
 }
 
 body {
@@ -761,4 +762,17 @@ body {
 
 .container.is-max-desktop {
   max-width: 60rem; /* 960px at 16px, grows with the font size */
+}
+
+.scroll-to-top {
+  width: 3.125rem;  /* 50px at 16px */
+  height: 3.125rem;
+}
+
+/* Bulma caps the menu bar and footer containers at a fixed 1344px; let that grow too,
+   or the (now larger) menu runs off the right edge on big screens. */
+@media screen and (min-width: 1408px) {
+  .container:not(.is-max-desktop):not(.is-max-widescreen) {
+    max-width: 84rem; /* 1344px at 16px */
+  }
 }
