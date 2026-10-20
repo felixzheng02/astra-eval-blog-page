@@ -44,9 +44,9 @@ authors:
 teaser:
   video: /media/videos/teaser-grid.mp4
   poster: /media/images/teaser-grid.jpg
-  eyebrow: GPT-6 Astra on a Hello Robot Stretch 4
-  headline: 24 household tasks, zero-shot.
-  note: Every tile is a real robot run, sped up.
+  eyebrow: ""
+  headline: ""
+  note: ""
 
 affiliation: Georgia Institute of Technology
 equal_contribution: Equal Contribution
