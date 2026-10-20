@@ -25,11 +25,7 @@ We use a [Hello Robot Stretch 4](https://hello-robot.com/stretch-4/), a mobile m
 
 The evaluation takes place in a mock apartment environment in our lab. The setup has a kitchen (counter, sink, toaster, fridge, a Keurig coffee maker, drawers, and cabinets), a dining table with chairs, a living area with a sofa, and a play area with toy bins next to a bedroom area with a dresser.
 
-{% comment "Felix" %}
-need to take a picture of environment and robot
-{% endcomment %}
-
-{% figure "/media/images/env-and-robot.svg", "Overall Astra control loop.", "env-and-robot" %}
+{% figure "/media/images/home-and-robot.png", "Stretch 4 in our lab's household environment.", "home-and-robot" %}
 
 ### System overview and control loop
 

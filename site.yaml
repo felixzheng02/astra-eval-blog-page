@@ -11,33 +11,33 @@ keywords: []
 # Author marks: corresponding → *, equal: 1 → †, equal: 2 → ‡
 authors:
   - name: Yuchen Zheng
-    url: ""
+    url: "https://felixzheng02.github.io/"
     corresponding: true
   - name: Nima Jadali
-    url: ""
+    url: "https://www.nimajadali.com/"
     equal: 1
     corresponding: false
   - name: Ankit Mehta
-    url: ""
+    url: "https://amehta265.github.io/"
     equal: 1
     corresponding: false
   - name: Rena Nakashima
-    url: ""
+    url: "https://renanakashima.github.io/"
     equal: 1
   - name: Sumukha Suresh Srivatsa
-    url: ""
+    url: "https://www.linkedin.com/in/sumukha-srivatsa/"
     corresponding: false
   - name: Nadira Mahamane
-    url: ""
+    url: "https://www.nadira.me/"
     equal: 2
   - name: Harsh Muriki
-    url: ""
+    url: "https://harshmuriki.com/"
     equal: 2
   - name: Hannah Spigarelli
-    url: ""
+    url: "https://www.linkedin.com/in/hannah-spigarelli/"
     equal: 2
   - name: Sonia Chernova
-    url: ""
+    url: "https://schernova.github.io/"
 
 # Full-screen looping video grid shown above the title. Delete `video` to hide it.
 # Rebuild the video with scripts/teaser/ (make_tiles.py, then compose_grid.py).
@@ -49,8 +49,8 @@ teaser:
   note: Every tile is a real robot run, sped up.
 
 affiliation: Georgia Institute of Technology
-equal_contribution: Indicates Equal Contribution
-equal_contribution_2: Indicates Equal Contribution
+equal_contribution: Equal Contribution
+equal_contribution_2: Equal Contribution
 corresponding: Corresponding author
 
 links:
