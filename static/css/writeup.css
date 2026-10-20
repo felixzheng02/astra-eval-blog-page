@@ -5,6 +5,50 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.writeup-nav > .container {
+  max-width: none;
+}
+
+.writeup-nav .navbar-brand {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.writeup-nav .navbar-burger {
+  flex-shrink: 0;
+}
+
+.writeup-nav .navbar-brand > .navbar-item {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.writeup-nav-probe {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: max-content;
+  overflow: visible;
+}
+
+.writeup-nav-probe .navbar-item,
+.writeup-nav-probe .navbar-link {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  overflow: visible;
+  max-width: none;
+}
+
 .writeup-nav .navbar-item,
 .writeup-nav .navbar-link {
   font-weight: 600;
@@ -65,6 +109,16 @@
 }
 
 @media screen and (min-width: 1024px) {
+  .writeup-nav > .container {
+    padding-inline: 0.35rem;
+  }
+
+  .writeup-nav > .container .navbar-brand,
+  .writeup-nav > .container .navbar-menu {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .writeup-nav,
   .writeup-nav > .container,
   .writeup-nav .navbar-menu,
@@ -77,6 +131,38 @@
     left: auto;
     right: 0;
   }
+}
+
+/* Collapse to the burger when JS adds .is-compact (tabs no longer fit). */
+.writeup-nav.is-compact {
+  display: block;
+}
+
+.writeup-nav.is-compact > .container {
+  display: block;
+  width: 100%;
+}
+
+.writeup-nav.is-compact .navbar-burger {
+  display: block !important;
+}
+
+.writeup-nav.is-compact .navbar-menu {
+  display: none !important;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1);
+  padding: 0.5rem 0;
+  flex-grow: 0;
+  flex-shrink: 1;
+}
+
+.writeup-nav.is-compact .navbar-menu.is-active {
+  display: block !important;
+}
+
+.writeup-nav.is-compact .navbar-end {
+  display: block;
+  margin-left: 0;
 }
 
 @media screen and (max-width: 1023px) {
@@ -104,6 +190,31 @@
   .writeup-nav .navbar-link:not(.is-arrowless)::after {
     display: none;
   }
+}
+
+.writeup-nav.is-compact .navbar-item.has-dropdown {
+  display: block;
+  padding: 0;
+}
+
+.writeup-nav.is-compact .navbar-item.has-dropdown > .navbar-link {
+  display: flex;
+  padding-right: 0.75rem;
+}
+
+.writeup-nav.is-compact .navbar-dropdown {
+  display: block;
+  position: static;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+  min-width: 0;
+  max-width: none;
+  padding: 0 0 0.35rem 0.85rem;
+}
+
+.writeup-nav.is-compact .navbar-link:not(.is-arrowless)::after {
+  display: none;
 }
 
 html {

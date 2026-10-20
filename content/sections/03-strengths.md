@@ -88,5 +88,5 @@ When Astra encounters difficulty completing a task, it autonomously attempts alt
 
 {% videoGrid 2 %}
 {% video "/media/videos/close-dishwasher.mp4", "Instruction: `Close the dishwasher.`; After several unsuccessful grasp attempts due to slippage, Astra switched the strategy by moving the gripper beneath the door and successfully closing it by tilting and pushing." %}
-{% video "/media/videos/turn-on-faucet-different-ways.mp4", "Instruction: `Turn on the sink faucet.`; After several failed attempts with a slippery horizontal grasp, Astra adapted its strategy: it switched to a vertical grasp and successfully turned on the faucet." %}
+{% video "/media/videos/turn-on-faucet-different-ways.mp4", "Instruction: `Turn on the sink faucet.`; After several failed attempts with a slippery horizontal grasp, Astra adapted its strategy: it switched to a vertical grasp and successfully turned on the faucet. Note that the water is not coming out by design." %}
 {% endvideoGrid %}
