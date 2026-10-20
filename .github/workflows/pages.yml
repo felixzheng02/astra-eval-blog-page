@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ELEVENTY_PATH_PREFIX: /blog/astra-beyond-tabletop/
+      ELEVENTY_PATH_PREFIX: "./"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

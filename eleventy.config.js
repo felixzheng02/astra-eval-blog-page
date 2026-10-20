@@ -341,6 +341,7 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("README.md");
   eleventyConfig.ignores.add("content/sections/_template.md");
 
+  eleventyConfig.addFilter("url", localUrl);
   eleventyConfig.addFilter("slug", slugify);
   eleventyConfig.addFilter("templateContent", readTemplateContent);
   eleventyConfig.addFilter("authorNames", (authors = []) =>
