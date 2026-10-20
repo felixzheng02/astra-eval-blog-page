@@ -441,8 +441,21 @@ function onReady(fn) {
   }
 }
 
+// The hero video grid autoplays; leave it paused for visitors who ask for reduced motion.
+function setupTeaserGrid() {
+  const video = document.querySelector(".teaser-grid-video");
+  if (!video) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    video.removeAttribute("autoplay");
+    video.pause();
+  } else {
+    video.play().catch(() => {});
+  }
+}
+
 onReady(() => {
   setupNavbarBurger();
+  setupTeaserGrid();
   setupVideoAutoplay();
   setupFigureZoom();
   setupPlotlyFigures();

@@ -39,6 +39,15 @@ authors:
   - name: Sonia Chernova
     url: ""
 
+# Full-screen looping video grid shown above the title. Delete `video` to hide it.
+# Rebuild the video with scripts/teaser/ (make_tiles.py, then compose_grid.py).
+teaser:
+  video: /media/videos/teaser-grid.mp4
+  poster: /media/images/teaser-grid.jpg
+  eyebrow: GPT-6 Astra on a Hello Robot Stretch 4
+  headline: 24 household tasks, zero-shot.
+  note: Every tile is a real robot run, sped up.
+
 affiliation: Georgia Institute of Technology
 equal_contribution: Indicates Equal Contribution
 equal_contribution_2: Indicates Equal Contribution

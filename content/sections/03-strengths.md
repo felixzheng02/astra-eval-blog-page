@@ -23,7 +23,7 @@ What stood out was not any single task Astra completed, but how much coherent ro
 Deployed zero-shot in a household environment, Astra can complete a diverse range of tasks, suggesting that a powerful VLM can transfer its knowledge to the physical world and generalize across robotic tasks.
 
 {% videoGrid 2 %}
-{% video "/media/videos/grab-napkin.mp4", "Instruction: `Grab a napkin.`; Astra made several attempts before ultimately succeeding in grasping a napkin." %}
+{% video "/media/videos/grab-napkin.mp4", "Instruction: `Pull out a tissue.`; Astra made several attempts before ultimately succeeding in grasping a napkin." %}
 {% video "/media/videos/open-jar.mp4", "Instruction: `Help me open the jar.`; Astra recognized the user holding a jar, tried a few rotate then lift motions, and finally opened the cap." %}
 {% video "/media/videos/toast-bagel.mp4", "Instruction: `Toast the bagel.`; Astra put the bagel inside the toaster and then pushed the lever down to turn on the toaster." %}
 {% video "/media/videos/turn-on-lamp.mp4", "Instruction: `Turn on the lamp.`; Astra attempted multiple times to grasp the pull chain and then pull downward to turn on the lamp." %}
@@ -32,7 +32,7 @@ Deployed zero-shot in a household environment, Astra can complete a diverse rang
 For some tasks, while Astra may not consistently achieve full completion, it reliably demonstrates the correct motion intention in nearly every case.
 
 {% videoGrid 2 %}
-{% video "/media/videos/pour-ice.mp4", "Instruction: `Pour ice to another cup.`; While a few ice cubes spilled, Astra clearly demonstrated the intended behavior of aligning the cups and executing the pour." %}
+{% video "/media/videos/pour-ice.mp4", "Instruction: `Pour ice cubes to another cup.`; While a few ice cubes spilled, Astra clearly demonstrated the intended behavior of aligning the cups and executing the pour." %}
 {% video "/media/videos/make-bed.mp4", "Instruction: `Make bed.`; Astra showed the intended motion of flattening the blanket, though the execution was not perfect." %}
 {% endvideoGrid %}
 
@@ -50,8 +50,8 @@ Even though VLMs are known for strong semantic understanding and are widely used
 #### It understands ambiguous task instructions
 
 {% videoGrid 2 %}
-{% video "/media/videos/bring-me-wipe-table.mp4", "Instruction: `Find me something to wipe the table.`; With both napkins and a towel available, Astra correctly selected the towel, a better choice for wiping the table. It then located the human and handed it over. Notably, Astra waited until the human's hand was ready before releasing the towel." %}
-{% video "/media/videos/set-table.mp4", "Instruction: `Set the table.`; Astra successfully interpreted this ambiguous instruction, transforming it into clear, concrete actions by arranging the plate, cup, and utensils appropriately." %}
+{% video "/media/videos/bring-me-wipe-table.mp4", "Instruction: `Bring me something to wipe the table.`; With both napkins and a towel available, Astra correctly selected the towel, a better choice for wiping the table. It then located the human and handed it over. Notably, Astra waited until the human's hand was ready before releasing the towel." %}
+{% video "/media/videos/set-table.mp4", "Instruction: `Set up the table.`; Astra successfully interpreted this ambiguous instruction, transforming it into clear, concrete actions by arranging the plate, cup, and utensils appropriately." %}
 {% endvideoGrid %}
 
 #### It plans over long horizons and replans when necessary

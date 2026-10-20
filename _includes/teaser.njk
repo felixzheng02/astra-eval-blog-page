@@ -1,0 +1,19 @@
+{# Full-screen looping grid of robot runs, shown above the title. Settings live under `teaser:` in site.yaml. #}
+{% if site.teaser and site.teaser.video %}
+<section class="teaser-grid" aria-label="Video grid of robot runs across the evaluated tasks">
+  <video class="teaser-grid-video" autoplay muted loop playsinline preload="auto"
+         {% if site.teaser.poster %}poster="{{ site.teaser.poster | url }}"{% endif %}>
+    <source src="{{ site.teaser.video | url }}" type="video/mp4">
+  </video>
+  <div class="teaser-grid-shade" aria-hidden="true"></div>
+  <div class="teaser-grid-text">
+    {% if site.teaser.eyebrow %}<p class="teaser-grid-eyebrow">{{ site.teaser.eyebrow }}</p>{% endif %}
+    {% if site.teaser.headline %}<h2 class="teaser-grid-headline">{{ site.teaser.headline }}</h2>{% endif %}
+    {% if site.teaser.note %}<p class="teaser-grid-note">{{ site.teaser.note }}</p>{% endif %}
+  </div>
+  <a class="teaser-grid-scroll" href="#title">
+    <span>Read the blog</span>
+    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+  </a>
+</section>
+{% endif %}

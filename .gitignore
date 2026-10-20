@@ -3,3 +3,6 @@ node_modules/
 .DS_Store
 .env
 *.log
+
+# teaser grid working files (tiles, previews)
+.teaser-cache/

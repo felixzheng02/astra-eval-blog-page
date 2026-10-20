@@ -32,7 +32,7 @@ Third, Astra often fails to exhibit what Andy Zeng calls ["physical commonsense"
 
 {% videoGrid 2 %}
 {% video "/media/videos/make-coffee.mp4", "Instruction: `Make coffee.`; While Astra understood the high-level steps and demonstrated the correct motion intentions, it struggled with this task. For example, Astra accidentally closed the lid again after opening it, and during the final step, pressed too hard, causing the coffee machine to tilt and the cup to fall. We also found Astra generally unable to insert the coffee pod into the slot; this was the only successful attempt among our trials." %}
-{% video "/media/videos/insert-toys.mp4", "Instruction: `Insert the toy.`; Due to the minimal clearance in each slot, Astra was unable to insert the toy." %}
+{% video "/media/videos/insert-toys.mp4", "Instruction: `Put the shapes in the box.`; Due to the minimal clearance in each slot, Astra was unable to insert the toy." %}
 {% endvideoGrid %}
 
 ### Fails to reason about dependencies across steps
