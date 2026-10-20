@@ -4,7 +4,7 @@
   <a class="navbar-link" href="#{{ section.data.nav | slug }}" aria-haspopup="true">{{ section.data.nav }}</a>
   <div class="navbar-dropdown" role="menu">
     {% for sub in subs %}
-    <a class="navbar-item" href="#{{ sub.id }}" role="menuitem">{{ sub.title }}</a>
+    <a class="navbar-item{% if sub.level > 3 %} is-nested{% endif %}" {% if sub.level > 3 %}style="--nav-depth: {{ sub.level }}" {% endif %}href="#{{ sub.id }}" role="menuitem">{{ sub.title }}</a>
     {% endfor %}
   </div>
 </div>

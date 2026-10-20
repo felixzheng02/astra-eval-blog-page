@@ -87,7 +87,7 @@ function readTemplateContent(section) {
 
 function headingOutline(html) {
   const headings = [];
-  const re = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
+  const re = /<h([2-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
   let match;
   while ((match = re.exec(String(html || "")))) {
     const attrs = match[2];
@@ -108,7 +108,7 @@ function fallbackSectionId(section) {
 
 function sectionSubheadings(section) {
   return headingOutline(readTemplateContent(section)).filter(
-    (heading) => heading.level === 3 && heading.id && heading.title
+    (heading) => heading.level > 2 && heading.id && heading.title
   );
 }
 

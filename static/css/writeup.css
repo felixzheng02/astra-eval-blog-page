@@ -92,7 +92,7 @@
 }
 
 .writeup-nav .navbar-dropdown .navbar-item {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.85rem;
   color: var(--text-secondary);
   white-space: normal;
@@ -100,6 +100,12 @@
   align-items: flex-start;
   padding-top: 0.45rem;
   padding-bottom: 0.45rem;
+}
+
+.writeup-nav .navbar-dropdown .navbar-item.is-nested {
+  font-weight: 400;
+  font-size: 0.8rem;
+  padding-left: calc(0.75rem + (var(--nav-depth, 4) - 3) * 0.9rem);
 }
 
 .writeup-nav .navbar-dropdown .navbar-item:hover,
@@ -130,6 +136,11 @@
   .writeup-nav .navbar-end > .has-dropdown:nth-last-of-type(-n + 2) .navbar-dropdown {
     left: auto;
     right: 0;
+  }
+
+  .writeup-nav:not(.is-compact) .navbar-dropdown {
+    max-height: min(70vh, 32rem);
+    overflow-y: auto;
   }
 }
 
