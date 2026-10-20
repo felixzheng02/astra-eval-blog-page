@@ -733,10 +733,6 @@ body.figure-lightbox-open .scroll-to-top {
   50%      { transform: translateY(3px); }
 }
 
-.publication-header {
-  scroll-margin-top: 3.25rem;
-}
-
 .publication-teaser {
   margin-top: 1.5rem;
 }
@@ -751,4 +747,18 @@ body.figure-lightbox-open .scroll-to-top {
   .teaser-grid-scroll i {
     animation: none;
   }
+}
+
+/* Big monitors: scale the whole page with the window width (like browser zoom), so the
+   article column doesn't become a narrow strip. Up to ~1920px wide nothing changes (16px). */
+html {
+  font-size: clamp(16px, calc(6px + 0.52vw), 24px);
+}
+
+body {
+  font-size: 1rem;
+}
+
+.container.is-max-desktop {
+  max-width: 60rem; /* 960px at 16px, grows with the font size */
 }
