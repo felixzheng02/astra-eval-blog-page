@@ -39,31 +39,20 @@ We performed ablation studies on this task to evaluate the impact of various des
 | Reasoning effort        | `high`                                                | `low`, `ultra`                         |
 | Cameras                 | All cameras (head left + head center + head right + wrist) | head center + wrist |
 | Wrist depth             | API for Astra to query depths from image coordinates| Color-mapped depth image; no depth                        |
-| Proprioception          | On                                                  | Off                                               |
-| Execution feedback      | On                                                  | Off                                               |
-| Embodiment description  | On                                                  | Off                                             |
 {% endtable %}
 
-**Metrics.** We record the metrics in {% tabref "metrics" %} for each rollout. Per-run results for each ablation are tabulated in the appendix: [reasoning effort](#reasoning-effort-results) ({% tabref "appendix-reasoning-trials" %}) and [wrist depth](#wrist-depth-results) ({% tabref "appendix-depth-trials" %}).
+**Metrics.** We record the metrics in {% tabref "metrics" %} for each rollout. Per-run results for each ablation are tabulated in the appendix: [reasoning effort](#reasoning-effort) ({% tabref "appendix-reasoning-trials" %}) and [wrist depth](#wrist-depth-results) ({% tabref "appendix-depth-trials" %}).
 
 {% table "Metrics recorded per episode.", "metrics" %}
 | Metric | Definition |
 | --- | --- |
-| Success | All sub-goals achieved |
+| Success rate | Fraction of episodes in which all sub-goals are achieved |
+| Total episode time | Episode start to end, split into inference (sum of Codex latency over all turns), robot execution (sum over commands of the time from sending the command until the commanded joints stop), and other (the remainder) |
+| Total tokens | Input tokens (including cached input) plus output tokens (including reasoning), from the Codex session log |
 | Completion rate | Fraction of sub-goals achieved |
 | Codex turns | Model calls in the episode |
-| Total time | Episode start to episode end |
 | Inference time per turn | Codex latency for one turn, from request to reply |
-| Execution time | Sum over commands of the time from sending the command until the commanded joints stop. Commands that move nothing count as 0 |
-| False-success declarations | Times Astra returns `done` when the task is not complete |
-| Unnecessary actions | Actions that do not advance the task, including continuing after the task is complete |
-| Collisions | Contacts with the environment or with objects not meant to be touched |
-| Human interventions | Times the operator stopped the episode or physically intervened |
-| Token usage | Input tokens (including cached input) plus output tokens (including reasoning), from the Codex session log |
 {% endtable %}
-
-- Inference and execution can overlap, so they need not sum to total time.
-- Joint motion is sampled at 5 Hz, so each command's execution time is accurate to about 0.2 s.
 
 ### Reasoning level
 

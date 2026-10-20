@@ -43,7 +43,7 @@ The evaluation takes place in a mock apartment environment in our lab. The setup
 
 We access Astra (`gpt-6-astra`) through a Codex CLI instance. It retains no information across experiments, but within each episode, its context preserves the sequence of image and text inputs. This allows Astra to refer back to what it has seen or done earlier in that episode.
 
-For every task, we use a uniform system prompt that specifies the overall objective (controlling a Stretch 4 robot to complete the user's task) and outlines the control loop, including its inputs and the required JSON output format. The prompt also includes additional details that may be helpful, such as robot embodiment information and safety guidelines. At the end, the one-sentence task instruction is appended. Importantly, there is no task-specific information, hints, or human priors embedded in our prompt. See the appendix for the [full prompt](#developer-instructions).
+For every task, we use a uniform system prompt that specifies the overall objective (controlling a Stretch 4 robot to complete the user's task) and outlines the control loop, including its inputs and the required JSON output format. The prompt also includes additional details that may be helpful, such as robot embodiment information and safety guidelines. At the end, the one-sentence task instruction is appended. Importantly, there is no task-specific information, hints, or human priors embedded in our prompt. See the appendix for the [full prompt](#system-prompt).
 
 **Configurations.** Unless otherwise noted, all results are reported using the default configuration in {% tabref "ablation-settings" %}. Alternative variants are evaluated in [Case Study and Ablations](#case-study-and-ablations).
 
