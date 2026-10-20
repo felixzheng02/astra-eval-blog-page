@@ -34,8 +34,9 @@ TARGET_S, TARGET_V = 60, 170       # tone-match the block clips to the grid tile
 
 # Text over the full grid, styled like the page hero (_includes/teaser.njk, writeup.css).
 TITLE = "Astra Beyond Tabletop: Into the Home"
-SUBTITLE = "Evaluating Astra as a Zero-Shot Robot Policy for Mobile Manipulation with Hello Robot Stretch 4"
-HEADLINE = "24 household tasks, zero-shot."
+SUBTITLE = ["Evaluating Astra as a Zero-Shot Robot Policy",          # two balanced lines
+            "for Mobile Manipulation with Hello Robot Stretch 4"]
+HEADLINE = "24 household tasks, zero-shot deployed"
 TEXT_IN, TEXT_FADE = 0.3, 0.9      # seconds after the grid settles; fade-in length
 FONT_DIR = "/usr/share/fonts/opentype/inter/"
 
@@ -107,15 +108,15 @@ def draw_text_layers():
     r = np.sqrt(((xs - W * 0.5) / (W * 0.5)) ** 2 + ((ys - H * 0.45) / (H * 0.55)) ** 2)
     radial = 0.05 + (0.45 - 0.05) * np.clip(r / 0.75, 0, 1)
     bottom = np.clip((ys / H - 0.40) / 0.60, 0, 1) * 0.88
-    top = np.clip((0.30 - ys / H) / 0.30, 0, 1) * 0.70
+    top = np.clip((0.40 - ys / H) / 0.40, 0, 1) * 0.75
     a = 1 - (1 - radial) * (1 - bottom) * (1 - top)
     shade = np.zeros((H, W, 4), np.float32)
     shade[..., :3] = (16, 13, 11)                    # rgb(11 13 16) in BGR
     shade[..., 3] = a
 
     scale = 1.3                                      # page sizes at a 1920 px viewport, enlarged for video
-    big_f = font("ExtraBold", round(72 * scale))     # headline and title share this (.teaser-grid-headline)
-    sub_f = font("Medium", 38)                       # .publication-subtitle weight 500; largest size that fits one line
+    big_f = font("ExtraBold", 88)                    # headline and title share this (.teaser-grid-headline weight); sized so the headline fits
+    sub_f = font("Medium", 54)                       # .publication-subtitle weight 500
     shadow = (2, 24 * scale / 2, 140)                # text-shadow: 0 2px 24px rgb(0 0 0 / 0.55)
 
     bottom_img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -125,8 +126,10 @@ def draw_text_layers():
     top_img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     title_y = round(64 * scale)
     draw_line(top_img, title_y, TITLE, big_f, (255, 255, 255, 255), shadow=shadow)
-    draw_line(top_img, title_y + round(big_f.size * 1.05) + round(0.85 * 16 * scale), SUBTITLE, sub_f,
-              (255, 255, 255, 230), shadow=(1, 12 * scale / 2, 150))
+    sub_y = title_y + round(big_f.size * 1.05) + round(0.85 * 16 * scale)
+    for line in SUBTITLE:
+        draw_line(top_img, sub_y, line, sub_f, (255, 255, 255, 235), shadow=(1, 12 * scale / 2, 150))
+        sub_y += round(sub_f.size * 1.3)
 
     def to_bgra(img):
         arr = np.asarray(img, np.float32) / 255.0
