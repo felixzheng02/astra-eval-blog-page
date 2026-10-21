@@ -1,0 +1,18 @@
+{% if site.bibtex %}
+<section class="section" id="citation">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Citation</h2>
+        <div class="bibtex-header">
+          <div></div>
+          <button class="copy-bibtex-btn" type="button" onclick="copyBibTeX()">
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <pre><code id="bibtex-code">{{ site.bibtex }}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

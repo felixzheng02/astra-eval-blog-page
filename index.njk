@@ -2,6 +2,14 @@
 layout: layout.njk
 permalink: /
 ---
+{% set citationBeforeAppendix = [] %}
 {% for section in collections.sections %}
+{% if section.data.nav == "Appendix" %}
+{% set _ = citationBeforeAppendix.push(true) %}
+{% include "citation.njk" %}
+{% endif %}
 {% include "section.njk" %}
 {% endfor %}
+{% if citationBeforeAppendix.length == 0 %}
+{% include "citation.njk" %}
+{% endif %}
