@@ -23,7 +23,7 @@ We conduct ablation studies to assess how different components affect Astra’s 
 
 **Instruction:** `put the bread in the oven and rotate the top knob to 300 deg`
 
-**Time limit:** 13 minutes
+**Time limit:** 18 minutes
 
 **Task Decomposition:** To complete the instruction, Astra must accomplish the following five sub-goals in sequence:
 1. Open the oven lid
