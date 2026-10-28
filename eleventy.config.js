@@ -107,6 +107,42 @@ function sectionSubheadings(section) {
   );
 }
 
+function navSlugFromMarkdown(text) {
+  const frontMatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(String(text || ""));
+  const nav = frontMatter && /^nav:\s*(.+)\s*$/m.exec(frontMatter[1]);
+  return slugify(nav?.[1]?.trim());
+}
+
+function loadSectionNavSlugs() {
+  const dir = path.join(root, "content/sections");
+  const slugsByFile = new Map();
+  const reserved = new Set();
+  if (!fs.existsSync(dir)) return { slugsByFile, reserved };
+  for (const name of fs.readdirSync(dir)) {
+    if (!name.endsWith(".md") || name.startsWith("_")) continue;
+    const slug = navSlugFromMarkdown(fs.readFileSync(path.join(dir, name), "utf8"));
+    if (!slug) continue;
+    slugsByFile.set(name, slug);
+    reserved.add(slug);
+  }
+  return { slugsByFile, reserved };
+}
+
+function disambiguateHeadingIds(state) {
+  const file = path.basename(String(state.env?.page?.inputPath || ""));
+  const { slugsByFile, reserved } = loadSectionNavSlugs();
+  const sectionSlug = slugsByFile.get(file);
+  if (!sectionSlug) return;
+
+  for (const token of state.tokens) {
+    if (token.type !== "heading_open" || token.tag === "h2") continue;
+    const id = token.attrGet("id");
+    if (id && reserved.has(id) && id !== sectionSlug) {
+      token.attrSet("id", `${sectionSlug}-${id}`);
+    }
+  }
+}
+
 function esc(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -364,6 +400,7 @@ export default function (eleventyConfig) {
     });
 
     md.core.ruler.push("heading-numbers", assignHeadingNumbers);
+    md.core.ruler.push("disambiguate-heading-ids", disambiguateHeadingIds);
 
     const defaultHeadingOpen = md.renderer.rules.heading_open ||
       ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
